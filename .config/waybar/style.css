@@ -1,20 +1,25 @@
-@import "./rose-pine.css";
+@import "./rose-pine-dawn.css";
 * {
     /* `otf-font-awesome` is required to be installed for icons */
     font-family: JetBrainsMono Nerd Font, FontAwesome, Roboto, Helvetica, Arial, sans-serif;
     font-size: 15px;
 }
 
-window#waybar {
-    background-color: @base;
-    color: @text;
-    transition-property: background-color;
-    transition-duration: .5s;
-    border-radius: 15px;
+ #waybar {
+     background: transparent;
+     border: 0px;
+     margin: 0px 0px 0px 0px;
 }
-
-window#waybar.hidden {
-    opacity: 0.2;
+ 
+ #waybar > box {
+     border-radius: 0px;
+     margin: 0px 0px 8px 0px;
+     /* background-color: rgba(18, 21, 29, 0.98);*/
+     background-color: @base;
+     box-shadow: 3px 3px 3px 1px rgba(0, 0, 0, 0.7);
+     /* box-shadow: 1 1 1 8px #151515; */
+     transition-property: background-color;
+     transition-duration: .5s;
 }
 
 /*
@@ -26,14 +31,14 @@ window#waybar.solo {
 }
 */
 
-window#waybar.termite {
-    background-color: #3F3F3F;
-}
+/* window#waybar.termite { */
+/*     background-color: #3F3F3F; */
+/* } */
 
-window#waybar.chromium {
-    background-color: #000000;
-    border: none;
-}
+/* window#waybar.chromium { */
+/*     background-color: #000000; */
+/*     border: none; */
+/* } */
 
 button {
     /* Use box-shadow instead of border so the text isn't offset */
@@ -51,8 +56,8 @@ button:hover {
 
 #workspaces button {
     padding: 0 0.5em;
-    background-color: @surface0;
-    color: @text;
+    background-color: @overlay0;
+    color: @foam;
     margin: 0.25em;
 }
 
@@ -61,10 +66,10 @@ button:hover {
 }
 
 #workspaces button.active {
-    background-color: @overlay;
-    color: @foam;
+    background-color: @pine;
+    color: @overlay;
     border-radius: 8px;
-    border: 1px solid @love;
+    border: 0px solid @love;
 }
 
 #workspaces button.focused {
@@ -74,7 +79,7 @@ button:hover {
 }
 
 #workspaces button.urgent {
-    background-color: #eb4d4b;
+    background-color: @love;
 }
 
 #mode {
@@ -102,7 +107,7 @@ button:hover {
 }
 
 #image {
-    background-color: @surface;
+    background-color: @base;
     border-radius: 8px;
     padding-left: 7px;
     padding-right: 7px;
@@ -110,21 +115,23 @@ button:hover {
     margin-bottom: 7px;
     margin-left: 7px;
     margin-right: 7px;
-    border: 1px solid @overlay;
+    border: 0px solid @overlay;
 }
 
 #window {
     background-color: @base;
     color: @gold;
     border: 0px;
-    border-radius: 0px;
+    border-radius: 8px;
+    margin-top: 7px;
+    margin-bottom: 7px;    
     padding-left: 3px;
     padding-right: 3px;
 }
 
 #workspaces {
     border-radius: 8px;
-    background-color: @surface;
+    background-color: @overlay;
     padding: 3px 3px 3px 3px;
     margin-top: 7px;
     margin-bottom: 7px;
@@ -142,17 +149,18 @@ button:hover {
 }
 
 #clock {
-    background-color: @surface;
+    background-color: @overlay;
     color: @rose;
     border: 1px solid @overlay;
     border-radius: 8px;   
     margin-top: 7px;
     margin-bottom: 7px;
+    margin-right: 8px;
     padding: 3px 3px 3px 3px;
 }
 
 #battery {
-    background-color: @surface;
+    background-color: @overlay;
     color: @love;
     border: 1px solid @overlay;
     border-radius: 8px;   
@@ -162,7 +170,7 @@ button:hover {
 }
 
 #battery.charging, #battery.plugged {
-    background-color: @surface;
+    background-color: @overlay;
     color: @love;
     border: 1px solid @overlay;
     border-radius: 8px;   
@@ -193,7 +201,7 @@ label:focus {
 }
 
 #cpu {
-    background-color: @surface;
+    background-color: @overlay;
     color: @iris;
     border: 1px solid @overlay;
     border-radius: 8px;   
@@ -203,7 +211,7 @@ label:focus {
 }
 
 #memory {
-    background-color: @surface;
+    background-color: @overlay;
     color: @foam;
     border: 1px solid @overlay;
     border-radius: 8px;   
@@ -217,7 +225,7 @@ label:focus {
 }
 
 #backlight {
-    background-color: @surface;
+    background-color: @overlay;
     color: @gold;
     border: 1px solid @overlay;
     border-radius: 8px;   
@@ -227,7 +235,7 @@ label:focus {
 }
 
 #network {
-    background-color: @surface;
+    background-color: @overlay;
     color: @foam;
     border: 1px solid @overlay;
     border-radius: 8px;   
@@ -237,11 +245,12 @@ label:focus {
 }
 
 #network.disconnected {
-    background-color: #f53c3c;
+    background-color: @overlay;
+    color: @muted;
 }
 
 #pulseaudio {
-    background-color: @surface;
+    background-color: @overlay;
     color: @pine;
     border: 1px solid @overlay;
     border-radius: 8px;   
@@ -251,8 +260,8 @@ label:focus {
 }
 
 #pulseaudio.muted {
-    background-color: #90b1b1;
-    color: #2a5c45;
+    background-color: @overlay;
+    color: @muted;
 }
 
 #wireplumber {
@@ -279,7 +288,7 @@ label:focus {
 }
 
 #temperature {
-    background-color: @surface;
+    background-color: @overlay;
     color: @gold;
     border: 1px solid @overlay;
     border-radius: 8px;   
@@ -293,11 +302,12 @@ label:focus {
 }
 
 #tray {
-    background-color: @surface;
-    border: 1px solid @overlay;
+    background-color: @base;
+    border: 1px solid @base;
     border-radius: 8px;   
     margin-top: 7px;
     margin-bottom: 7px;
+    margin-right: 5px;
     padding: 3px 3px 3px 3px;
 }
 

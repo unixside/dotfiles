@@ -40,19 +40,35 @@ setopt pushdignoredups
 ## Revert operators +/-.
 setopt pushdminus
 
-# Syntax highlighting
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# Plugins
+PLUGDIR=/usr/share/zsh/plugins
 
-# Automatic autocomplete suggestions 
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+## Syntax highlighting
+source $PLUGDIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+
+## Automatic autocomplete suggestions 
+source $PLUGDIR/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+## Search substring of command on history
+source $PLUGDIR/zsh-history-substring-search/zsh-history-substring-search.zsh
+### Use keys Ctrl-p and Ctrl-n for navigate
+bindkey -M emacs '^P' history-substring-search-up
+bindkey -M emacs '^N' history-substring-search-down
 
 # Enable colors
 autoload -U colors && colors
 
+# Help command
+autoload -U run-help
+autoload run-help-git
+autoload run-help-svn
+autoload run-help-svk
+unalias run-help
+alias help=run-help
+
 # Prompt
-PROMPT="%{$fg_bold[yellow]%}%n%{$fg[magenta]%} in%{$fg_bold[green]%} %1~%{$fg_bold[white]%} do: %{$reset_color%}"
-
-
+PROMPT=$'%F{red}[%F{yellow}%{\e[3m%}%n%F{green}@%F{blue}%m%{\e[0m%} %F{magenta}%~%F{red}]%F{white}$ %f'
 
 # Alias
 
@@ -68,5 +84,16 @@ alias lt='eza --tree'
 ## cat to bat
 export BAT_THEME="ansi"
 alias cat='bat'
+
+unsetopt PROMPT_SP
+
+export FZF_DEFAULT_OPTS="
+	--color=fg:#908caa,bg:#191724,hl:#ebbcba
+	--color=fg+:#e0def4,bg+:#26233a,hl+:#ebbcba
+	--color=border:#403d52,header:#31748f,gutter:#191724
+	--color=spinner:#f6c177,info:#9ccfd8
+	--color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa"
+
+[ -f $HOME/.theme ] && . $HOME/.theme || echo "THEME_SLECTED not exist"
 
 cd $HOME

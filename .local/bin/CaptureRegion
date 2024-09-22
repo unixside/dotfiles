@@ -1,16 +1,23 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
+SELECTED=false
 SHADOW=false
 ROUNDED_CORNERS=false
 BACKGROUND_FLAG=false
-BACKGROUND=""
+BLUR=false
+BACKGROUND="EMPTY"
 SCREENSHOTFOLDER=$(pwd)
 MASK=/tmp/mask.png
+BACKTMP=/tmp/back.png
 DATE=$(date '+%Y-%m-%d_%H%M%S')
 FILE=$SCREENSHOTFOLDER/$DATE'_capture_region'.png
 
-help () {
-    echo "LMAO"
+_help () {
+    echo "Help: TODO"
+}
+
+_usage () {
+    echo "Usage: TODO"
 }
 
 rounded_corners () {
@@ -24,82 +31,160 @@ rounded_corners () {
 shadow () {
     echo "Apliying shadow"
     convert $FILE\
-	\( +clone -background black -shadow 30x8+0+0 \) +swap \
+	\( +clone -background black -shadow 85x10+0+10 \) +swap \
 	-background transparent \
 	-layers merge +repage $FILE
 
 }
 
-background () {
-    echo "Apliying composition (capture over background)"
-    convert -size $w'x'$h xc:$BACKGROUND -resize 110% \
-	$FILE -gravity center -composite $FILE
+background_gradient () {
+    {
+	read -r color1
+	read -r color2
+    } < <(
+	xrdb -query | \
+	    awk '/color[12345]{1}:/ { print $2 }' | \
+	    sort -R | \
+	    head -n 2)
+
+    convert -size $((w+100))'x'$((h+100)) \
+	    gradient:$color1-$color2 $BACKTMP
 }
 
-for ((i=1; i<=$#; i++));
-do
-    case ${!i} in
-	-h )
-	    help
-	    exit 0
+background_arcoiris () {
+    COMMAND="convert -size $((w+100))'x'$(((h+100)/5)) "
+    for color in $(xrdb -query | awk '/color[12345]{1}:/ { print $2 }')
+    do
+	 COMMAND=$COMMAND"xc:$color " 
+    done
+    bash -c "$COMMAND -append $BACKTMP"
+    convert -scale 10% -blur 0x2.5 -resize 1000% $BACKTMP $BACKTMP
+}
+
+background_hexColor_arg () {
+    convert -size $((w+100))'x'$((h+100)) xc:"$BACKGROUND" $BACKTMP
+}
+
+background_without_arg () {
+	BACKGROUND=$(convert $FILE -format %c \
+			     -colorspace LAB \
+			     -colors 1\
+			     histogram:info:- | \
+			 grep -Eo '#[0-9A-Fa-f]{6}')
+	background_hexColor_arg
+}
+
+resize_img () {
+    convert $1 -resize $2 -quality 75 $3
+}
+
+crop_to_aspect_ratio () {
+    convert $1 -gravity center -crop $2 +repage $3
+}
+
+apply_blur () {
+    convert $1 -scale 10% -blur $2 -resize 1000% $3
+}
+
+background_image_arg () {
+    read -r dpy_w dpy_h < <(
+	xrandr | awk ' /*/ { print $1 }' | tr 'x' ' ')    
+    crop_to_aspect_ratio $BACKGROUND "16:9" $BACKTMP
+    resize_img $BACKTMP $((dpy_w+100))'x'$((dpy_h+100)) $BACKTMP
+    apply_blur $BACKTMP "0x2.5" $BACKTMP
+}
+
+background () {
+    shopt -s extglob
+    case $BACKGROUND in
+        EMPTY)
+	    background_without_arg
 	    ;;
-	-s )
-	    SHADOW=true
-            ;;
-	-r )
-	    ROUNDED_CORNERS=true
+        Arcoiris)
+	    background_arcoiris
 	    ;;
-	-b )
-	    let i=$((i+1))
-	    BACKGROUND_FLAG=true
-	    BACKGROUND=${!i}
+	Gradient)
+	    background_gradient
 	    ;;
-	-o )	    
-	    let i=$((i+1))
-	    FILE_FLAG=true
-	    FILE=${!i}
+        \#*[A-Fa-f0-9])
+	    background_hexColor_arg
 	    ;;
-	* )	    
-	    echo "ERROR:No existe el parametro: ${!i}"
-	    echo ""
-	    help
+        @[*.jpeg|*.jpg|*.png])
+	    background_image_arg
+	    ;;
+	*|?)
+	    echo "Error:not valid background format:$BACKGROUND?"
 	    exit 1
-	    ;;
+	    ;;	    
+    esac
+    shopt -u extglob
+    convert -gravity center -composite $BACKTMP $FILE $FILE 
+}
+
+apply_effects () {
+
+    if $ROUNDED_CORNERS
+    then rounded_corners
+    fi
+
+    if $SHADOW
+    then shadow
+    fi
+
+    if $BACKGROUND_FLAG
+    then background
+    fi
+}
+
+capture () {
+    if $SELECTED
+    then
+	echo "Selected region."
+	read -r x y w h < <(slop -f "%x %y %w %h")
+	if ! [[ $x =~ ^[0-9]+$ ]];
+	then exit 0
+	else
+	    echo "x= $x, y=$y, Width=$w, Height=$h"
+	fi
+	import -window root -crop $w'x'$h+$x+$y $FILE	
+    else
+	import -window root $FILE
+	read -r w h < <(identify -format "%w %h" $FILE)
+    fi
+}
+
+while getopts :hsSRBb:o:u flag
+do
+    case $flag in
+	s) SELECTED=true
+	   ;;	
+	S) SHADOW=true
+           ;;
+	R) ROUNDED_CORNERS=true
+	   ;;
+	B) BLUR=true
+	   ;;
+	b) BACKGROUND_FLAG=true
+	   if ! [[ $OPTARG =~ "-[hsSRbo]{1}" ]]
+	   then BACKGROUND=$OPTARG
+	   fi
+	   ;;
+	o) FILE_FLAG=true
+	   FILE=$OPTARG
+	   ;;
+	h) _help
+	   exit 0
+	   ;;
+	u) _usage
+	   exit 0
+	   ;;
     esac
 done
 
-echo "Selected region."
-read -r x y w h < <(slop -f "%x %y %w %h")
-
-
-if ! [[ $x =~ ^[0-9]+$ ]];
-then exit 0
-else
-    echo "x= $x, y=$y, Width=$w, Height=$h"
-fi
-
-import -window root -crop $w'x'$h+$x+$y $FILE
-
-if [ $BACKGROUND_FLAG = false ]
-then BACKGROUND=$(convert $FILE -format %c \
-			  -colorspace LAB \
-			  -colors 1\
-			  histogram:info:- | grep -Eo '#[0-9A-F]*')
-fi
-
-if $ROUNDED_CORNERS
-then rounded_corners
-fi
-
-if $SHADOW
-then shadow
-fi
-
-if $BACKGROUND_FLAG
-then background
-fi
+capture
+apply_effects
 
 sxiv -f -z 80 $FILE
+rm -f $BACKTMP $MASK
 
-rm -f $MASK
 exit 0

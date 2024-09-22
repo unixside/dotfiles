@@ -1,6 +1,6 @@
 #+TITLE: Emacs Config File
 #+AUTHOR: Leanhdro
-#+STARTUP: overview hidestars 
+#+STARTUP: overview hidestars indent
 * Core
 ** Sever
 #+BEGIN_SRC emacs-lisp
@@ -32,68 +32,55 @@
 
   (setq package-list
         '(rainbow-mode
-  	rainbow-delimiters
-  	lua-mode
-  	rust-mode
-  	yaml-mode
-  	haskell-mode
-  	org-bullets
-  	olivetti
-  	which-key
-  	multiple-cursors
-  	ibuffer
-  	iedit
-  	imenu-list
-  	projectile
-  	company
-  	company-box
-  	yasnippet
-  	yasnippet-snippets
-  	lsp-mode
-  	lsp-java
-  	lsp-jedi
-  	lsp-ui
-  	dap-mode
-  	vterm
-  	vterm-toggle
-  	vertico
-  	cape
-  	orderless
-  	consult
-  	consult-recoll
-  	marginalia
-  	mini-frame
-  	zencoding-mode
-  	nerd-icons
-  	nerd-icons-dired
-  	elegant-agenda-mode))
+          rainbow-delimiters
+          lua-mode
+          rust-mode
+          yaml-mode
+          haskell-mode
+          org-bullets
+          olivetti
+          which-key
+          multiple-cursors
+          ibuffer
+          iedit
+          imenu-list
+          projectile
+          company
+          company-box
+          yasnippet
+          yasnippet-snippets
+          lsp-mode
+          lsp-java
+          lsp-jedi
+          lsp-ui
+          dap-mode
+          vterm
+          vterm-toggle
+          vertico
+          cape
+          orderless
+          consult
+          consult-recoll
+          marginalia
+          mini-frame
+          zencoding-mode
+          nerd-icons
+          nerd-icons-dired
+          dired-open
+          diredfl
+          peep-dired
+          elegant-agenda-mode
+          org-bullets
+          counsel
+          svg-lib
+          xelb))
 
   (dolist (package package-list)
     (straight-use-package package))
 
 #+END_SRC
 ** Installation from repo 
-#+BEGIN_SRC emacs-lisp
-
-  ;; NANO modeline
-  (straight-use-package
-   '(nano-modeline :type git :host github :repo "rougier/nano-modeline" :branch "no-prefix"))
-
-  ;; NANO Vertico
-  (straight-use-package
-   '(nano-vertico :type git :host github :repo "rougier/nano-vertico"))
-
-  ;; SVG Library
-  (straight-use-package
-   '(svg-lib :type git :host github :repo "rougier/svg-lib"))
-
-  ;; SVG-TAG-MODE
-  (straight-use-package
-   '(svg-tag-mode :type git :host github :repo "rougier/svg-tag-mode"))
-
-  (straight-use-package
-   '(sideframe :type git :host github :repo "rougier/sideframe"))
-
+#+BEGIN_SRC emacs-lisp :tangle no
 #+END_SRC
 ** Encoding
 #+BEGIN_SRC emacs-lisp
@@ -110,10 +97,11 @@
 #+BEGIN_SRC emacs-lisp
 
   (setq-default inhibit-startup-screen t      
-  	      inhibit-startup-message t     
-  	      inhibit-startup-echo-area-message t 
-  	      initial-scratch-message "" 
-  	      initial-buffer-choice t)
+                inhibit-startup-message t     
+                inhibit-startup-echo-area-message t 
+                initial-scratch-message "" 
+                initial-buffer-choice t
+                inhibit-x-resources t)
 
 #+END_SRC
 * Default options
@@ -144,7 +132,7 @@
 #+BEGIN_SRC emacs-lisp
 
   (add-to-list 'custom-theme-load-path "~/.emacs.d/elisp/themes/")
-  (load-theme 'rose-pine t)
+  (load-theme 'rose-pine-dawn t)
 
 #+END_SRC
 ** Delimiters
@@ -161,12 +149,12 @@
   (require 'frame)
 
   ;; Default frame settings
-  (setq default-frame-alist '((min-height . 1)  '(height . 45)
-                              (min-width  . 1)  '(width  . 81)
+  (setq default-frame-alist '((min-height . 20)  (height . 36)
+                              (min-width  . 40)  (width  . 81)
                               (vertical-scroll-bars . nil)
-                              (internal-border-width . 24)
-                              (left-fringe . 3)
-                              (right-fringe . 3)
+                              (internal-border-width . 30)
+                              (left-fringe . 0)
+                              (right-fringe . 0)
                               (tool-bar-lines . 0)
                               (menu-bar-lines . 0)))
 
@@ -177,24 +165,131 @@
 
   (defun my/frame-recenter (&optional frame)
     "Center FRAME on the screen.
-    FRAME can be a frame name, a terminal name, or a frame.
-    If FRAME is omitted or nil, use currently selected frame."
+      FRAME can be a frame name, a terminal name, or a frame.
+      If FRAME is omitted or nil, use currently selected frame."
     (interactive)
     (unless (eq 'maximised (frame-parameter nil 'fullscreen))
       (let* ((frame (or (and (boundp 'frame)
-    			   frame)
-    		      (selected-frame)))
-    	   (frame-w (frame-pixel-width frame))
-    	   (frame-h (frame-pixel-height frame))
-    	   ;; frame-monitor-workarea returns (x y width height) for the monitor
-    	   (monitor-w (nth 2 (frame-monitor-workarea frame)))
-    	   (monitor-h (nth 3 (frame-monitor-workarea frame)))
-    	   (center (list (/ (- monitor-w frame-w) 2)
-    			 (/ (- monitor-h frame-h) 2))))
-        (apply 'set-frame-position (flatten-list (list frame center))))))
+                             frame)
+                        (selected-frame)))
+             (frame-w (frame-pixel-width frame))
+             (frame-h (frame-pixel-height frame))
+             ;; frame-monitor-workarea returns (x y width height)
+             ;; for the monitor
+             (monitor-w (nth 2 (frame-monitor-workarea frame)))
+             (monitor-h (nth 3 (frame-monitor-workarea frame)))
+             (center (list (/ (- monitor-w frame-w) 2)
+                           (/ (- monitor-h frame-h) 2))))
+        (apply 'set-frame-position
+               (flatten-list (list frame center))))))
 
-  (add-hook 'after-init-hook #'my/frame-recenter)
-  (add-hook 'after-make-frame-functions #'my/frame-recenter)
+  ;;(add-hook 'after-init-hook #'my/frame-recenter)
+  ;;(add-hook 'after-make-frame-functions #'my/frame-recenter)
+
+  (defun my/make-frame ()
+    "Create a new frame and switch to *scratch* buffer."
+    (interactive)
+    (select-frame
+     (make-frame '((window-system . x)
+                   (display . ":0")
+                   (internal-border-width . 30)
+                   (left-fringe . 1)
+                   (right-fringe . 1))))
+    (switch-to-buffer "*scratch*")
+    (my/frame-recenter))
+
+  (defun clear-face (face)    
+    "Clear specific face."
+    (interactive)
+    (face-remap-add-relative
+     face
+     '(:family 'unspecified
+               :foundry    'unspecified
+               :width      'unspecified
+               :height     'unspecified
+               :weight     'unspecified
+               :slant      'unspecified
+               :foreground 'unspecified
+               :distant-foreground 'unspecified
+               :background 'unspecified
+               :underline  'unspecified
+               :overline   'unspecified
+               :strike-through 'unspecified
+               :box        'unspecified
+               :inverse    'unspecified
+               :stipple    'unspecified
+               :font       'unspecified
+               :fontset    'unspecified
+               :extend     'unspecified
+               :inherit    'unspecified)))
+
+  (defun my/left-frame ()
+    "Create a new frame in dark mode."
+    (interactive)
+    (setq buffer (treemacs))
+    (switch-to-buffer buffer)
+    (setq-local mode-line-format nil)
+    (delete-other-windows)
+    (modify-frame-parameters (selected-frame)
+                             '((background-color . "#f2e9e1")
+                               (foreground-color . "#797593")
+                               (cursor-color     . "#575279")
+                               (width            . 32))))
+
+  (defun my/agenda-frame (&optional sufix)
+    "Create a new frame for org-agenda-mode custom view."
+    (interactive)
+    (let ((buffer (dired-noselect default-directory)))
+      (with-current-buffer buffer (dired-hide-details-mode t)))
+    (select-frame (make-frame '((window-system . pgtk)
+                                (display . ":0")
+                                (height . 30)
+                                (width . 120)
+                                (left-fring . 10)
+                                (title . " Agenda"))))
+    (org-agenda nil sufix)
+    (my/frame-recenter)
+    (local-set-key (kbd "q") #'delete-frame))
+
+  (defun my/capture-frame-kill ()
+    "TODO"
+    (interactive)
+    (org-capture-kill)
+    (delete-frame))
+
+  (defun my/capture-frame-finish ()
+    "TODO"
+    (interactive)
+    (org-capture-finalize)
+    (delete-frame))
+
+  (defun my/capture-frame (&optional suffix)
+    "TODO"
+    (interactive)
+    (select-frame
+     (make-frame '((window-system . x)
+                   (display . ":0")
+                   (height . 15)
+                   (width . 81)
+                   (background . "#f2e9e1")
+                   (title . "Org Capture"))))
+    (my/frame-recenter)
+    (org-capture nil suffix)
+    (delete-other-windows)
+    (local-set-key (kbd "C-c C-q") 'my/capture-frame-kill)
+    (local-set-key (kbd "C-c C-f") 'my/capture-frame-finish))
+
+  (defun my/dired-frame ()
+    "Create a new frame for dired-mode."
+    (select-frame
+     (make-frame '((window-system . x)
+                   (display . ":0")
+                   (height . 38)
+                   (width . 120)
+                   (title . " Dired"))))
+    (dired nil)
+    (my/frame-recenter)
+    (local-set-key (kbd "q") #'delete-frame))
 
 #+END_SRC
 ** Window
@@ -267,33 +362,29 @@
 
 #+END_SRC
 ** Fonts
-:LOGBOOK:
-- Note taken on [2024-04-02 mar 22:37] \\
-  Testeando org-add-note
-:END:
 #+BEGIN_SRC emacs-lisp
 
   (set-face-attribute 'default nil
-  		    :family "Iosevka Nerd Font"
-  		    :weight 'light
-  		    :height 130)
+                    :family "Iosevka Nerd Font"
+                    :weight 'light
+                    :height 140)
 
   (set-face-attribute 'bold nil
-  		    :family "Iosevka Nerd Font"
-  		    :weight 'regular)
+                    :family "Iosevka Nerd Font"
+                    :weight 'regular)
 
   (set-face-attribute 'italic nil
-  		    :family "Iosevka Nerd Font"
-  		    :height 130
-  		    :weight 'semilight
-  		    :slant 'italic)
+                    :family "Victor Mono"
+                    :height 140
+                    :weight 'regular
+                    :slant 'italic)
 
   (set-fontset-font t 'unicode
-  		  (font-spec :name "Inconsolata") nil)
+                  (font-spec :name "Inconsolata") nil)
 
   (set-fontset-font t '(#xe000 . #xffdd)
-  		  (font-spec :name "Iosevka Nerd Font"
-  			     :size 15) nil)
+                  (font-spec :name "Iosevka Nerd Font"
+                             :size 16) nil)
 
 #+END_SRC
 
@@ -313,17 +404,12 @@
 #+BEGIN_SRC emacs-lisp
 
   (setq-default cursor-type '(bar . 2)
-                cursor-in-non-selected-window nil
-                cursor-intangible-mode t
-                x-stretch-cursor nil)
+		cursor-in-non-selected-window nil
+		cursor-intangible-mode t
+		x-stretch-cursor nil)
   (blink-cursor-mode 1)
-
-  ;; (set-face-attribute 'cursor nil
-  ;;                     :foreground text)
-
-  ;; (set-cursor-color text)
+  
 #+END_SRC
-
 ** Line numbers
 #+BEGIN_SRC emacs-lisp
 
@@ -344,24 +430,34 @@
 ** Modeline and headerline
 #+BEGIN_SRC emacs-lisp
 
-  (add-to-list 'load-path "~/.emacs.d/elisp/mono-modeline" )
-  (require 'mono-modeline)
-  (set-face-attribute 'header-line-status-RO nil
-  		    :background "#9ccfd8"
-  		    :foreground (face-background 'default))
-  (set-face-attribute 'header-line-status-RW nil
-  		    :background "#908caa"
-  		    :foreground (face-background 'default))
-  (set-face-attribute 'header-line-status-** nil
-  		    :background "#eb6f92"
-  		    :foreground (face-background 'default))
-  (set-face-attribute 'header-line-default nil
-  		    :background "#26233a"
-  		    :foreground "#908caa")
-  (add-hook 'prog-mode-hook  #'mono-modeline-mode)
-  (add-hook 'org-mode-hook   #'mono-modeline-mode)
-  (add-hook 'conf-mode-hook  #'mono-modeline-mode)
-  (mono-thin-mode-line)
+      (add-to-list 'load-path "~/.emacs.d/elisp/mono-modeline")
+      (require 'mono-modeline)
+        (set-face-attribute 'header-line-default nil
+                          :background (face-background 'mode-line)
+                          :foreground (face-foreground 'default))
+      (set-face-attribute 'header-line-status-RO nil
+                          :background (face-foreground 'font-lock-keyword-face)
+                          :foreground (face-background 'default))
+      (set-face-attribute 'header-line-status-RW nil
+                          :background (face-foreground 'font-lock-punctuation-face)
+                          :foreground (face-background 'mode-line))
+      (set-face-attribute 'header-line-status-** nil
+                          :background (face-foreground 'warning)
+                          :foreground (face-background 'mode-line))
+      (set-face-attribute 'header-line-secondary nil
+                          :foreground (face-foreground 'line-number))
+
+      (add-hook 'prog-mode-hook  #'mono-modeline-mode)
+      (add-hook 'org-mode-hook   #'mono-modeline-mode)
+      (add-hook 'conf-mode-hook  #'mono-modeline-mode)
+      (add-hook 'fundamental-mode-hook #'mono-modeline-mode)
+
+      (add-hook 'dired-mode-hook 'mono-nil-mode-line)
+      (mono-thin-mode-line)
+      (set-face-attribute 'mode-line-active nil
+                          :background
+                          (face-background 'header-line-status-RW))
+
 
 #+END_SRC
 ** Minibuffer
@@ -383,7 +479,8 @@
 
   (defun my/vertico--resize-window (height)
     "Resize active minibuffer window to HEIGHT."
-    ;;  (setq-local truncate-lines (< (point) (* 0.8 (vertico--window-width)))
+    ;;  (setq-local truncate-lines (< (point) (* 0.8
+    ;;                             (vertico--window-width)))
     (setq-local truncate-lines t
                 resize-mini-windows 'grow-only
                 max-mini-window-height 1.0)
@@ -398,7 +495,8 @@
                   (and (< dp 0) (eq vertico-resize t)))
           (window-resize nil dp nil nil 'pixelwise)))))
 
-  (advice-add #'vertico--resize-window :override #'my/vertico--resize-window)
+  ;(advice-add #'vertico--resize-window :override
+  ;            #'my/vertico--resize-window)
 
 #+END_SRC
 *** Miniframe
@@ -406,100 +504,63 @@
 
   (require 'mini-frame)
 
-  (defcustom my/minibuffer-position 'bottom
-    "Minibuffer position, one of 'top or 'bottom"
-    :type '(choice (const :tag "Top"    top)
-                   (const :tag "Bottom" bottom))
-    :group 'nano-minibuffer)
+  (defun my/mini-frame-parameters ()
+    "Get my preferences for show minibuffer on miniframe."
+    (interactive)
+    (let ((x (- (frame-pixel-height) (* (frame-pixel-height) 0.3))))
+      (custom-set-variables
+       '(mini-frame-show-parameters
+         '((top . ,x)
+           (left . 0)
+           (width . 1.0)
+           (height . 1)
+           (child-frame-border-width . 0))))))
 
+  (add-hook 'minibuffer-setup-hook
+            (lambda ()
+              (make-local-variable 'face-remapping-alist)
+              (add-to-list 'face-remapping-alist
+                           '(default
+                             (:background (face-background 'mode-line))))))
 
-  (defun my/minibuffer--frame-parameters ()
-    "Compute minibuffer frame size and position."
+  (add-hook 'minibuffer-mode #'my/mini-frame-parameters)
 
-    ;; Quite precise computation to align the minibuffer and the
-    ;; modeline when they are both at top position
-    (let* ((edges (window-pixel-edges)) ;; (left top right bottom)
-           (body-edges (window-body-pixel-edges)) ;; (left top right bottom)
-           (left (nth 0 edges)) ;; Take margins into account
-           (top (nth 1 edges)) ;; Drop header line
-           (right (nth 2 edges)) ;; Take margins into account
-           (bottom (nth 3 body-edges)) ;; Drop header line
-           (left (if (eq left-fringe-width 0)
-                     left
-                   (- left (frame-parameter nil 'left-fringe))))
-           (right (nth 2 edges))
-           (right (if (eq right-fringe-width 0)
-                      right
-                    (+ right (frame-parameter nil 'right-fringe))))
-           (border 1)
-           (width (- right left (* 1 border)))
+  (set-face-attribute 'child-frame-border nil
+                      :background (face-background 'mode-line))
 
-           ;; Window divider mode
-           (width (- width (if (and (bound-and-true-p window-divider-mode)
-                                    (or (eq window-divider-default-places 'right-only)
-                                        (eq window-divider-default-places t))
-                                    (window-in-direction 'right (selected-window)))
-                               window-divider-default-right-width
-                             0)))
-           (y (- top border)))
+  (mini-frame-mode 1)
 
-      (append `((left-fringe . 0)
-                (right-fringe . 0)
-                (user-position . t) 
-                (foreground-color . ,(face-foreground 'highlight nil 'default))
-                (background-color . ,(face-background 'highlight nil 'default)))
-              (cond ((and (eq my/minibuffer-position 'bottom))
-                     `((top . -1)
-                       (left . 0)
-                       (width . 1.0)
-                       (child-frame-border-width . 0)
-                       (internal-border-width . 1)))
-                    (t
-                     `((left . ,(- left border))
-                       (top . ,y)
-
-                       (width . (text-pixels . ,width))
-                       (child-frame-border-width . ,border)
-                       (internal-border-width . 0)))))))
-
-  					;(set-face-background 'child-frame-border (face-foreground 'nano-faded))
-  (setq mini-frame-default-height 3)
-  (setq mini-frame-create-lazy t)
-  (setq mini-frame-show-parameters 'my/minibuffer--frame-parameters)
-  (setq mini-frame-ignore-commands
-        '("edebug-eval-expression" debugger-eval-expression))
-  					;(setq mini-frame-internal-border-color (face-foreground 'nano-faded))
-
-  (setq mini-frame-resize-min-height 3)
-  (setq mini-frame-resize t)
-  ;; (setq mini-frame-resize 'grow-only)
-  ;; (setq mini-frame-default-height (+ 1 vertico-count))
-  ;; (setq mini-frame-resize-height (+ 1 vertico-count))
-  ;; (setq mini-frame-resize nil)
-
-  ;;(mini-frame-mode 1)
 #+END_SRC
 ** Sideframe
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 
-  (defvar parameters
-    '(window-parameters . ((no-other-window . nil)
-                           (no-delete-other-windows . t))))
+      (defvar parameters
+        '(window-parameters . ((no-other-window . nil)
+                               (no-delete-other-windows . t))))
 
-  (setq fit-window-to-buffer-horizontally t)
-  (setq window-resize-pixelwise t)
+      ;(setq fit-window-to-buffer-horizontally t)
+      ;(setq window-resize-pixelwise t)
 
-  (defun dired-default-directory-on-left ()
-    "Display `default-directory' in side window on left, hiding details."
-    (interactive)
-    (let ((buffer (dired-noselect default-directory)))
-      (with-current-buffer buffer (dired-hide-details-mode t))
-      (display-buffer-in-side-window
-       buffer `((side . left) (slot . 0)
-                (window-width . 32)
-                (preserve-size . (t . nil)) ,parameters))))
+      (defun dired-default-directory-on-left ()
+        "Display `default-directory' in side window on left, hiding details."
+        (interactive)
+        (let ((buffer (dired-noselect default-directory)))
+          (with-current-buffer buffer (dired-hide-details-mode t))
+          (make-frame `((side . left) (slot . 0)
+                        (window-width . 32)
+                        (internal-border-width . 5)
+                        (background . "#263238")
+                        (preserve-size . (t . nil)) ,parameters))))
 
-  (global-set-key (kbd "M-d") 'dired-default-directory-on-left)
+  (defun my/frame ()
+        "My frame function"
+        (interactive)
+        (let ((buffer (dired-noselect default-directory))
+              (make-frame '((internal-border-width . 5)
+                            (width . 40)
+                            (buffer-list . 'buffer))))))
+
+      (global-set-key (kbd "M-d") #'my-frameg)
 
 #+END_SRC
 * Utilities
@@ -561,7 +622,7 @@
   ;; (setq completion-styles '(basic substring partial-completion flex))
 
   (setq vertico-resize nil        ; How to resize the Vertico minibuffer window.
-        vertico-count 8           ; Maximal number of candidates to show.
+        vertico-count 10           ; Maximal number of candidates to show.
         vertico-count-format nil) ; No prefix with number of entries
 
   (vertico-mode)
@@ -579,10 +640,10 @@
 
   (set-face-attribute 'vertico-group-separator nil
                       :strike-through t)
-  (set-face-attribute 'vertico-current nil
-                      :inherit '(nano-strong nano-subtle))
-  (set-face-attribute 'completions-first-difference nil
-                      :inherit '(nano-default))
+  ;; (set-face-attribute 'vertico-current nil
+  ;;                     :inherit '(nano-strong nano-subtle))
+  ;; (set-face-attribute 'completions-first-difference nil
+  ;;                     :inherit '(nano-default))
 
   (setq completion-in-region-function
         (lambda (&rest args)
@@ -601,12 +662,11 @@
   (advice-add #'vertico--format-candidate
               :around #'minibuffer-format-candidate)
 
-  (defun vertico--prompt-selection ()
-    "Highlight the prompt"
-
-    (let ((inhibit-modification-hooks t))
-      (set-text-properties (minibuffer-prompt-end) (point-max)
-                           '(face (nano-strong nano-salient)))))
+  ;; (defun vertico--prompt-selection ()
+  ;;   "Highlight the prompt"
+  ;;   (let ((inhibit-modification-hooks t))
+  ;;     (set-text-properties (minibuffer-prompt-end) (point-max)
+  ;; 			 '(face (nano-strong nano-salient)))))
 
 
   (defun minibuffer-vertico-setup ()
@@ -728,8 +788,9 @@
   (require 'company-box)
 
   (setq-default company-minimum-prefix-length 3
-  	      company-idle-delay 0)
+              company-idle-delay 0)
   (global-company-mode)
+  (setq company-box-icons-in-terminal t)
   (add-hook 'company-mode-hook 'company-box-mode)
 
 #+END_SRC
@@ -821,8 +882,8 @@
 ** General
 #+BEGIN_SRC emacs-lisp
 
-  					;(add-hook 'org-mode-hook #'org-indent-mode)
-  					;(add-hook 'org-mode-hook 'variable-pitch-mode)
+					;(add-hook 'org-mode-hook #'org-indent-mode)
+					;(add-hook 'org-mode-hook 'variable-pitch-mode)
 
 
   (with-eval-after-load 'org
@@ -832,28 +893,36 @@
   (setq org-image-actual-width nil)
   (setq-default org-support-shift-select t)
   (setq-default org-fontify-quote-and-verse-blocks t)
+  (setq-default org-hide-emphasis-markers nil)
 
   (add-hook 'org-mode-hook
-            (lambda ()
-              (setq-local electric-pair-inhibit-predicate
-                          `(lambda (c)
-                             (if (char-equal c ?<) t
-    			     (,electric-pair-inhibit-predicate c))))))
+	    (lambda ()
+	      (setq-local electric-pair-inhibit-predicate
+			  `(lambda (c)
+			     (if (char-equal c ?<) t
+			     (,electric-pair-inhibit-predicate c))))))
+
+#+END_SRC
+** Bullets
+#+BEGIN_SRC emacs-lisp
+
+  (require 'org-bullets)
+  (add-hook 'org-mode-hook #'org-bullets-mode)
 
 #+END_SRC
 ** Olivetti
 #+BEGIN_SRC emacs-lisp
 
   (require 'olivetti)
-  (olivetti-set-width 80)
+  ;(olivetti-set-width 80)
 
 #+END_SRC
 ** Functions
 #+BEGIN_SRC emacs-lisp
 
-  (defun mda/org-open-current-window ()                                              
+  (defun mda/org-open-current-window ()
     "Opens file in current window."                                                  
-    (interactive)                                                                    
+    (interactive)                                              
     (let ((org-link-frame-setup (cons (cons 'file 'find-file) org-link-frame-setup)))
       (org-open-at-point)))
 
@@ -864,7 +933,7 @@
 ** Writer modes
 #+BEGIN_SRC emacs-lisp
 
-  (require 'nano-writer)
+  (require 'writer-mode)
 
 #+END_SRC
 * Calendar
@@ -877,131 +946,124 @@
 * Agenda
 #+BEGIN_SRC emacs-lisp
 
-  (add-to-list 'org-modules 'org-habit)
-  (require 'org-habit)
-  (require 'org-agenda)
-  					;(require 'elegant-agenda-mode)
+    (add-to-list 'org-modules 'org-habit)
+    (require 'org-habit)
+    (require 'org-agenda)
 
-  (global-set-key (kbd "C-c a") 'org-agenda)
+    (global-set-key (kbd "C-c a") 'org-agenda)
 
-  ;; Files
-  (setq org-agenda-files '("~/Documents/Repos/agenda/Inbox.org"
-                           "~/Documents/Repos/agenda/Tasks.org"
-                           "~/Documents/Repos/agenda/Work.org"
-                           "~/Documents/Repos/agenda/Habits.org"
-                           "~/Documents/Repos/agenda/Notes.org"
-                           "~/Documents/Repos/agenda/Projects.org"))
+    ;; Files
+    (setq org-agenda-files '("~/Dropbox/Org/Agenda/Bandeja.org"
+                             "~/Dropbox/Org/Agenda/Tareas.org"
+                             "~/Dropbox/Org/Agenda/Trabajo.org"
+                             "~/Dropbox/Org/Agenda/Habitos.org"
+                             "~/Dropbox/Org/Agenda/Notas.org"
+                             "~/Dropbox/Org/Agenda/Reuniones.org"))
 
-  (setq org-archive-location
-        "~/Documentos/Repos/agenda/Archivo/%s_store.org::datetree/")
+    (setq org-archive-location
+          "~/Dropbox/Org/Agenda/Archivo/%s_store.org::datetree/")
 
-  ;; Keywords
-  (setq org-todo-keywords
-        '((sequence "TODO(t!)"
-                    "PROCESSING(p!)"	  
-                    "LOCKED(l!)"   		  
-                    "|" "CANCELLED(c!)" "DONE(d!)" "STORE(s!)")))
-  ;; Faces
-  (setq org-todo-keyword-faces
-        (quote (("TODO"       :inherit org-todo)
-                ("DONE"       :inherit org-done)
-                ("PROCESSING" :inherit font-lock-keyword-face)
-                ("LOCKED"     :inherit font-lock-warning)
-                ("CANCELED"   :inherit font-lock-comment-face)
-                ("STORE"      :inherit font-lock-doc-face))))
+    ;; Keywords
+    (setq org-todo-keywords
+          '((sequence "TODO(t!)"
+                      "PROCESSING(p!)"	  
+                      "LOCKED(l!)"   		  
+                      "|" "CANCELLED(c!)" "DONE(d!)" "STORE(s!)")))
+    ;; Faces
+    (setq org-todo-keyword-faces
+          (quote (("TODO"       :inherit org-todo)
+                  ("DONE"       :inherit org-done)
+                  ("PROCESSING" :inherit font-lock-keyword-face)
+                  ("LOCKED"     :inherit font-lock-warning)
+                  ("CANCELED"   :inherit font-lock-comment-face)
+                  ("STORE"      :inherit font-lock-doc-face))))
 
-  (setq org-agenda-inhibit-startup t
-        org-agenda-include-diary nil
-        org-agenda-show-log t
-        org-agenda-show-all-dates t
-        org-agenda-time-in-grid t
-        org-agenda-show-current-time-in-grid t
-        org-agenda-span 7
-        org-agenda-start-on-weekday 1
-        org-agenda-sticky nil
-        org-agenda-window-setup 'current-window
-        org-agenda-use-tag-inheritance t
-        org-show-habits-only-for-today t
-        org-deadline-warning-days 7
-        org-log-done 'time
-        org-log-into-drawer "LOGBOOK"
-        org-tags-column 0
-        org-refile-targets '((nil :maxlevel . 1)
-                             (org-agenda-files :maxlevel . 1))
-        org-refile-use-outline-path 'file
-        org-agenda-block-separator #x2501
-        org-habit-show-all-today t
-        org-habit-show-habits nil
-        org-extend-today-unitl 3)
+    (setq org-agenda-inhibit-startup t
+          org-agenda-include-diary nil
+          org-agenda-show-log t
+          org-agenda-show-all-dates t
+          org-agenda-time-in-grid t
+          org-agenda-show-current-time-in-grid t
+          org-agenda-span 7
+          org-agenda-start-on-weekday 1
+          org-agenda-sticky nil
+          org-agenda-window-setup 'current-window
+          org-agenda-use-tag-inheritance t
+          org-show-habits-only-for-today t
+          org-deadline-warning-days 7
+          org-log-done 'time
+          org-log-into-drawer "LOGBOOK"
+          org-tags-column 0
+          org-refile-targets '((nil :maxlevel . 1)
+                               (org-agenda-files :maxlevel . 1))
+          org-refile-use-outline-path 'file
+          org-agenda-block-separator "\s"
+          org-habit-show-all-today t
+          org-habit-show-habits nil
+          org-extend-today-unitl 3)
 
-  (defun air-org-skip-subtree-if-priority (priority)
-    "Skip an agenda subtree if it has a priority of PRIORITY.
+    (defun air-org-skip-subtree-if-priority (priority)
+      "Skip an agenda subtree if it has a priority of PRIORITY.
 
-    PRIORITY may be one of the characters ?A, ?B, or ?C."
-    (let ((subtree-end (save-excursion (org-end-of-subtree t)))
-  	(pri-value (* 1000 (- org-lowest-priority priority)))
-  	(pri-current (org-get-priority (thing-at-point 'line t))))
-      (if (= pri-value pri-current)
-  	subtree-end
-        nil)))
+      PRIORITY may be one of the characters ?A, ?B, or ?C."
+      (let ((subtree-end (save-excursion (org-end-of-subtree t)))
+          (pri-value (* 1000 (- org-lowest-priority priority)))
+          (pri-current (org-get-priority (thing-at-point 'line t))))
+        (if (= pri-value pri-current)
+          subtree-end
+          nil)))
 
-  (setq org-agenda-custom-commands
-        '(
-  	("d" "Agenda "
-  	 ;; Display items with priority A
-  	 (
-            (tags "PRIORITY=\"A\""
-  		((org-agenda-skip-function
-                    '(org-agenda-skip-entry-if 'todo 'done))
-  		 (org-agenda-overriding-header
-                    "High-priority unfinished tasks:")))
+    (setq org-agenda-custom-commands
+          '(
+            ("d" "Hoy"
+             ;; View curret day in the calendar view
+             ((agenda "" ((org-agenda-span 'day)
+                          (org-agenda-format-date "")
+                          (org-agenda-overriding-header "")))))
+            ("t" "Tareas"
+             ((alltodo ""
+                       ((org-agenda-overriding-header "")))))
+            ))
 
-            ;; View curret day in the calendar view
-            (agenda "" ((org-agenda-span 'day)
-                        (org-agenda-overriding-header
-                         "Today:")))
+    (setq org-capture-templates
+          `(
+          ("t" "Tareas"
+           entry (file+headline "~/Dropbox/Org/Agenda/Tareas.org"
+                                "Tareas")
+           "* TODO %?\n Captured: %<%Y-%m-%d %I:%M %p>"
+           :empty-lines 1 )
+          ("h" "Habitos"
+           entry (file+headline "~/Dropbox/Org/Agenda/Habitos.org"
+                                "Habitos")
+           "* TODO %?\n Captured: %<%Y-%m-%d %I:%M %p>"
+           :empty-lines 1)
+          ("i" "Reuniones"
+           entry (file "~/Dropbox/Org/Agenda.org")
+           "* Meeting with %? \n%T" :empty-lines 1)
+          ("n" "Notas"
+           entry (file+headline "~/Dropbox/Org/Agenda/Notas.org" "Notas")
+           "* %?\n Captured: %<%Y-%m-%d %I:%M %p>"
+           :empty-lines 1)
+          )
+          )
 
-            ;; Display items with priority B
-            ;; (really it is view all items minus A & C)
-            (alltodo ""
-                     ((org-agenda-skip-function
-                       '(or (air-org-skip-subtree-if-priority ?A)
-                            (air-org-skip-subtree-if-priority ?C)))
-                      (org-agenda-overriding-header "Tasks:")))
+    (global-set-key (kbd "C-c c") #'org-capture)
 
-            ;; Display items with pirority C
-            (tags "PRIORITY=\"C\""
-  		((org-agenda-skip-function
-                    '(org-agenda-skip-entry-if 'todo 'done))
-  		 (org-agenda-overriding-header
-                    "Low-priority Unfinished tasks:")))
-            ))))
+    (defun my/agenda-header-line ()
+      "TODO Doc."
+      (interactive)
+      (setq header-line-format
+            '(:eval
+              (mono-modeline-format "Agenda"
+                                    ""
+                                    ""
+                                    (format-time-string
+                                     "%A %d %B %Y")))))
 
-  (setq org-capture-templates
-        `(
-  	("t" "Task"
-  	 entry (file+headline "~/Documentos/Org/Todo.org" "Tasks")
-  	 "* TODO %?\n Captured: %<%Y-%m-%d %I:%M %p>"
-  	 :empty-lines 1 )
-  	("h" "Habit"
-  	 entry (file+headline "~/Documentos/Org/Habits.org" "Tasks")
-  	 "* TODO %?\n Captured: %<%Y-%m-%d %I:%M %p>"
-  	 :empty-lines 1)
-  	("i" "Meeting"
-  	 entry (file "~/Documentos/Org/Agenda.org")
-  	 "* Meeting with %? \n%T" :empty-lines 1)
-  	("n" "Notes"
-  	 entry (file+headline "~/Documentos/Org/Notes.org" "Notes")
-  	 "* %?\n Captured: %<%Y-%m-%d %I:%M %p>"
-  	 :empty-lines 1)
-  	)
-        )
+    (add-hook 'org-agenda-mode-hook 'my/agenda-header-line)
+    (add-hook 'org-agenda-mode-hook 'mono-thin-mode-line)
 
-  (global-set-key (kbd "C-c c") #'org-capture)
-
-  					;(add-hook 'org-agenda-mode-hook 'elegant-agenda-mode)
-  (add-hook 'org-agenda-mode-hook 'mono-nil-mode-line)
-  (add-hook 'calendar-mode-hook   'mono-nil-mode-line)
+    (add-hook 'calendar-mode-hook   'mono-nil-mode-line)
 
 #+END_SRC
 * SVG Tags
@@ -1012,7 +1074,7 @@
   (plist-put svg-lib-style-default :font-family "Roboto Mono")
   (plist-put svg-lib-style-default :font-size 13)
   (set-face-attribute 'svg-tag-default-face nil
-  		    :height 130)
+                    :height 130)
 
   (defconst date-re "[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}")
   (defconst time-re "[0-9]\\{2\\}:[0-9]\\{2\\}")
@@ -1022,9 +1084,9 @@
   (defun svg-progress-percent (value)
     (save-match-data
       (svg-image (svg-lib-concat
-  		(svg-lib-progress-bar  (/ (string-to-number value) 100.0)
+                (svg-lib-progress-bar  (/ (string-to-number value) 100.0)
                                          nil :margin 0 :stroke 2 :radius 3 :padding 2 :width 11)
-  		(svg-lib-tag (concat value "%")
+                (svg-lib-tag (concat value "%")
                                nil :stroke 0 :margin 0)) :ascent 'center)))
 
   (defun svg-progress-count (value)
@@ -1045,59 +1107,59 @@
   (setq svg-tag-tags
         `(
           ;; Org tags :EMACS:
-  	("\\(:[A-Z]+:\\)" . ((lambda (tag)
+        ("\\(:[A-Z]+:\\)" . ((lambda (tag)
                                  (svg-tag-make tag :beg 1 :end -1))))
-  	
-  	;; Task priority [#A] [#B] [#C]
-  	("\\[#[A-Z]\\]" . ( (lambda (tag)
+
+        ;; Task priority [#A] [#B] [#C]
+        ("\\[#[A-Z]\\]" . ( (lambda (tag)
                                 (svg-tag-make tag :face 'org-priority 
                                               :beg 2 :end -1 :margin 0))))
 
-  	;; TODO / DONE
-  	("TODO" . ((lambda (tag) (svg-tag-make "TODO" :face 'org-todo :inverse t :margin 0 :width 6))))
-  	("DONE" . ((lambda (tag) (svg-tag-make "DONE" :face 'org-done :margin 0 :width 6))))
+        ;; TODO / DONE
+        ("TODO" . ((lambda (tag) (svg-tag-make "TODO" :face 'org-todo :inverse t :margin 0 :width 6))))
+        ("DONE" . ((lambda (tag) (svg-tag-make "DONE" :face 'org-done :margin 0 :width 6))))
 
 
-  	;; Citation of the form [cite:@Knuth:1984]
-  	("\\(\\[cite:@[A-Za-z]+:\\)" . ((lambda (tag)
+        ;; Citation of the form [cite:@Knuth:1984]
+        ("\\(\\[cite:@[A-Za-z]+:\\)" . ((lambda (tag)
                                             (svg-tag-make tag
-  							:inverse t
-  							:beg 7 :end -1
-  							:crop-right t))))
-  	("\\[cite:@[A-Za-z]+:\\([0-9]+\\]\\)" . ((lambda (tag)
+                                                        :inverse t
+                                                        :beg 7 :end -1
+                                                        :crop-right t))))
+        ("\\[cite:@[A-Za-z]+:\\([0-9]+\\]\\)" . ((lambda (tag)
                                                      (svg-tag-make tag
-  								 :end -1
-  								 :crop-left t))))
+                                                                 :end -1
+                                                                 :crop-left t))))
 
-  	
-  	;; Active date (with or without day name, with or without time)
-  	(,(format "\\(<%s>\\)" date-re) .
-  	 ((lambda (tag)
+
+        ;; Active date (with or without day name, with or without time)
+        (,(format "\\(<%s>\\)" date-re) .
+         ((lambda (tag)
               (svg-tag-make tag :beg 1 :end -1 :margin 0))))
-  	(,(format "\\(<%s \\)%s>" date-re day-time-re) .
-  	 ((lambda (tag)
+        (,(format "\\(<%s \\)%s>" date-re day-time-re) .
+         ((lambda (tag)
               (svg-tag-make tag :beg 1 :inverse nil :crop-right t :margin 0))))
-  	(,(format "<%s \\(%s>\\)" date-re day-time-re) .
-  	 ((lambda (tag)
+        (,(format "<%s \\(%s>\\)" date-re day-time-re) .
+         ((lambda (tag)
               (svg-tag-make tag :end -1 :inverse t :crop-left t :margin 0))))
 
-  	;; Inactive date  (with or without day name, with or without time)
-  	(,(format "\\(\\[%s\\]\\)" date-re) .
-  	 ((lambda (tag)
+        ;; Inactive date  (with or without day name, with or without time)
+        (,(format "\\(\\[%s\\]\\)" date-re) .
+         ((lambda (tag)
               (svg-tag-make tag :beg 1 :end -1 :margin 1 :face 'org-date))))
-  	(,(format "\\(\\[%s \\)%s\\]" date-re day-time-re) .
-  	 ((lambda (tag)
+        (,(format "\\(\\[%s \\)%s\\]" date-re day-time-re) .
+         ((lambda (tag)
               (svg-tag-make tag :beg 1 :inverse nil :crop-right t :margin 0 :face 'org-date))))
-  	(,(format "\\[%s \\(%s\\]\\)" date-re day-time-re) .
-  	 ((lambda (tag)
+        (,(format "\\[%s \\(%s\\]\\)" date-re day-time-re) .
+         ((lambda (tag)
               (svg-tag-make tag :end -1 :inverse t :crop-left t :margin 0 :face 'org-date))))
 
-  	;; ;; Progress
-  	("\\(\\[[0-9]\\{1,3\\}%\\]\\)" . ((lambda (tag)
+        ;; ;; Progress
+        ("\\(\\[[0-9]\\{1,3\\}%\\]\\)" . ((lambda (tag)
                                               (svg-progress-percent (substring tag 1 -2)))))
-  	("\\(\\[[0-9]+/[0-9]+\\]\\)" . ((lambda (tag)
+        ("\\(\\[[0-9]+/[0-9]+\\]\\)" . ((lambda (tag)
                                             (svg-progress-count (substring tag 1 -1)))))
-  	))
+        ))
 
   ;;(add-hook 'org-mode-hook #'svg-tag-mode)
   ;;(add-hook 'org-agenda-hook #'svg-tag-mode)
@@ -1138,10 +1200,24 @@
 * Dired
 #+BEGIN_SRC emacs-lisp
 
-  (setq dired-free-space nil)
   (require 'nerd-icons)
   (require 'nerd-icons-dired)
+  (require 'dired-open)
+  (require 'diredfl)
+  (require 'peep-dired)
+
+  (setq dired-listing-switches "-alh --group-directories-first"
+        dired-free-space nil
+        peep-dired-cleanup-on-disable t
+        peep-dired-enable-on-directories t
+        dired-open-extensions '(("gif" . "sxiv")
+                                ("jpg" . "sxiv")
+                                ("png" . "sxiv")
+                                ("mkv" . "mpv")
+                                ("mp4" . "mpv")))
+
   (add-hook 'dired-mode-hook #'nerd-icons-dired-mode)
-  					;(add-hook 'dired-mode-hook #'my/nil-mode-line)
+  (add-hook 'dired-mode-hook #'diredfl-mode)
+
 
 #+END_SRC

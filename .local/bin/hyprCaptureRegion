@@ -1,0 +1,202 @@
+#!/usr/bin/env bash
+
+read -r DPYWIDTH DPYHEIGHT < <(hyprctl -j monitors | \
+				   jq -r '"\(.[0].width) \(.[0].height)''"')
+
+GEOMETRY=""
+NAME=$(date +'%Y-%m-%d-%H%M%S_hypr_screenshot.png')
+FILE="$(pwd)"/$NAME
+BACKTMP=/tmp/back.png
+
+get_colors () {
+    colors=$(magick $FILE -format %c -colorspace LAB -colors 5 histogram:info:-\
+		 | sort -n -r | grep -Eo '#[A-Fa-f0-9]{6}')
+}
+
+_help () {
+    echo "Help: TODO"
+}
+
+_usage () {
+    echo "Usage: TODO"
+}
+
+background_hexColor_arg () {
+    echo "Making color arg background!!!"
+    magick -size "$2" xc:"$1" $BACKTMP
+}
+
+background_without_arg () {
+    echo "Making without arg background!!!"
+    color=$(echo $colors | head -n 1)
+    magick -size "$1" -background white $BACKTMP
+}
+
+resize_img () {
+    magick $1 -resize $2 -quality 75 $3
+}
+
+crop_to_aspect_ratio () {
+    magick $1 -gravity center -crop $2 +repage $3
+}
+
+background_arcoiris () {
+    echo "Making arcoiris background!!!"
+    read -r w h < <(identify -format "%w %h" $FILE)
+    COMMAND="magick -size $((w+100))'x'$(((h+100)/5)) "
+    for color in ${colors}
+    do
+	 COMMAND=$COMMAND"xc:$color "
+    done
+    bash -c "$COMMAND -append $BACKTMP"    
+}
+
+background_image_arg () {
+    echo "Making image background!!!"
+    NEWDPYWIDTH=$(bc <<< $DPYWIDTH*1.1) && NEWDPYWIDTH=${NEWDPYWIDTH%.*}
+    NEWDPYHEIGHT=$(bc <<< $NEWDPYHEIGHT*1.1) && NEWDPYHEIGHT=${NEWDPYHEIGHT%.*}
+    crop_to_aspect_ratio $1 16:9 $BACKTMP
+    wait
+    resize_img $BACKTMP "${NEWDPYWIDTH}x${NEWDPYHEIGHT}" $BACKTMP
+    magick $BACKTMP -scale 10% -blur 0x2.5 -resize 1000% $BACKTMP
+}
+
+background_gradient () {
+    read -r color1 color2 < <(
+	echo $colors | sort -R | head -n 2 | tr '\n' ' ')
+
+    echo "Making gradient background!!!"
+    
+    magick -size $1 gradient:$color1-$color2 $BACKTMP
+}
+
+capture () {
+    GEOMETRY=$(
+	case $1 in
+	    "full")
+		echo "0,0 1920x1080"
+		;;
+	    "select")
+		slurp -f "%x,%y %wx%h"
+		;;
+	    "window")
+		hyprctl -j activewindow | \
+		    jq -r '"\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])''"'     
+		;;
+	    *)
+		echo "Error: invalid option"
+		exit 1
+		;;
+	esac)
+    
+    grim -g "$GEOMETRY" "$FILE"
+}
+
+rounded_corners () {
+    echo "Apliying rounded corners"
+    read -r w h < <(identify -format "%w %h" $FILE)
+    magick $FILE -alpha Set \
+	    \( -size $w'x'$h xc:none -draw \
+	    "roundrectangle 0,0 $(($w-1)),$(($h-1)) 15,15" \) \
+	    -compose DstIn -composite $FILE
+}
+
+shadow () {
+    echo "Apliying shadow"
+    magick $FILE\
+	\( +clone -background black -shadow 60x10+0+5 \) +swap \
+	-background transparent \
+	-layers merge +repage $FILE
+}
+
+make_background () {
+    shopt -s extglob
+    case $1 in
+        EMPTY)
+	    background_without_arg
+	    ;;
+        Arcoiris)
+	    get_colors
+	    background_arcoiris
+	    ;;
+	Gradient)
+	    get_colors
+	    background_gradient
+	    ;;
+        \#*[A-Fa-f0-9])
+	    background_hexColor_arg $1
+	    ;;
+        @*.jpeg|*.jpg|*.png)
+	    background_image_arg $1
+	    ;;
+	*|?)
+	    echo "Error:not valid background format:$1?"
+	    exit 1
+	    ;;	    
+    esac
+    shopt -u extglob
+}
+
+while getopts :hufswSRb:D: flag
+do
+    case $flag in
+	h)
+	    _help
+	    exit 0
+	    ;;
+	u)
+	    _usage
+	    exit 0
+	    ;;
+	f)
+	    capture "full" &
+	    continue
+	    ;;
+	s)
+	    capture "select" &
+	    continue
+	    ;;
+	w)
+	    capture "window" &
+	    continue
+	    ;;   
+	R)
+	    wait
+	    rounded_corners &
+	    continue
+	    ;;
+	S)
+	    wait
+	    shadow &
+	    continue
+	    ;;
+	b)
+	    wait
+	    if ! [[ $OPTARG =~ ^-[huswSRb]{1}$ ]]
+	    then
+		echo  "Making background with $OPTARG!!!"
+		make_background "$OPTARG"
+	    else
+		make_background "EMPTY"
+	    fi
+	    wait
+	    magick composite $FILE $BACKTMP -gravity center $FILE
+	    continue
+	    ;;
+	D)
+	    wait
+	    AUX=$OPTARG/$(basename $FILE)
+	    mv -f $FILE $AUX
+	    FILE=$AUX
+	    ;;
+	*)
+	    echo "Error:invalid option"
+	    _help
+	    exit 1
+	    ;;
+    esac
+done
+
+wait
+sxiv -b -z 80 $FILE
+exit 0

@@ -12,7 +12,7 @@ Xft.hintstyle:  hintslight
 Xft.autohint:   false
 Xft.lcdfilter:  lcddefault
 
-Xcursor.theme: Oxygen 18 White
+Xcursor.theme: Oxygen White
 Xcursor.size: 16
 !Emacs.font: Iosevka Nerd Font-9
 !Emacs.geometry: 90x42+50+60

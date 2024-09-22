@@ -1,6 +1,6 @@
 #!/bin/sh
 
-WALLDIR=$HOME/Pictures/Wallpapers
+WALLDIR=$HOME/Imágenes/Wallpapers
 WALLPAPER=$(find $WALLDIR -type f| shuf -n 1)
 
-swww img $WALLPAPER --transition-type=any
+setWallpaper $WALLPAPER

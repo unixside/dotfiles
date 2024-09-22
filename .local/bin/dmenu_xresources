@@ -5,9 +5,9 @@ NF=$(xrdb -get foreground)
 SB=$(xrdb -get color10)
 
 COLORS="-nb $NB -nf $NF -sb $SB -sf $NB"
-DMENU="dmenu -bw 3 -i -c -l 10 -h 30"
+DMENU="dmenu -bw 3 -i -c -l 10"
 
-NEWTHEME=$(/bin/ls $HOME/.config/Xresources-themes | $DMENU -p "theme =>" $COLORS | awk '{print $1}')
+NEWTHEME=$(/bin/ls $HOME/.config/Xresources-themes | grep -Ev 'README.*' | $DMENU -fn "Iosevka" -p "theme =>" $COLORS | awk '{print $1}')
 
 if [ $NEWTHEME ]
 then

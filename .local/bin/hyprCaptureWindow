@@ -1,7 +1,0 @@
-#!/bin/sh
-
-GEOMETRY=$(hyprctl -j activewindow | jq -r '"\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])''"')
-DATE=$(date +'%Y-%m-%d-%H%M%S_hypr_screenshot.png')
-FILE="$HOME/Imágenes/Screenshots/$DATE"
-
-grim -g "$GEOMETRY" $FILE
