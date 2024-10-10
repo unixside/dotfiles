@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+while read file
+do
+        case "$1" in
+        "C-d")
+            mv $file ~/.trash ;;
+        "C-r")
+            magick -rotate 90 $file $file ;;
+        "C-c")
+            wl-copy < $file ;;
+        "C-w")
+            setWallpaper $file ;;
+        esac
+done
