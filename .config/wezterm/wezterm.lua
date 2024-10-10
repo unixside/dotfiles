@@ -1,7 +1,7 @@
 local wezterm = require 'wezterm'
 local act = wezterm.action
 local colors = require('lua/rose-pine').colors()
--- local window_frame = require('lua/rose-pine').window_frame()
+local window_frame = require('lua/rose-pine').window_frame()
 
 local config = {}
 
@@ -11,29 +11,30 @@ config.font_size = 12
 -- config.color_scheme = 'OneDark (base16)'
 -- config.color_scheme = 'matrix'
 -- config.color_scheme = 'DWM rob (terminal.sexy)'
--- config.window_background_opacity = 1.0
 config.colors = colors
--- config.window_frame = window_frame
+config.window_background_opacity = 1.0
+config.window_frame = window_frame
 config.line_height = 1.0
 config.adjust_window_size_when_changing_font_size = false
 config.default_cursor_style = 'BlinkingBar'
-config.cursor_blink_rate = 300
--- config.animation_fps = 10
+config.cursor_blink_rate = 400
+config.front_end = "OpenGL"
+config.animation_fps = 1
 config.cursor_blink_ease_in = 'Constant'
 config.cursor_blink_ease_out = 'Constant'
 config.enable_tab_bar = true
 config.enable_wayland = false
-config.tab_bar_at_bottom = true
+config.tab_bar_at_bottom = false
 config.show_tab_index_in_tab_bar = true
 config.tab_max_width = 56
 config.use_fancy_tab_bar = false
 config.initial_cols = 95
 config.initial_rows = 23
 config.window_padding = {
-  left = 30,
-  right = 30,
-  top = 30,
-  bottom = 30,
+  left = 35,
+  right = 35,
+  top = 35,
+  bottom = 35,
 }
 
 -- Show which key table is active in the status area

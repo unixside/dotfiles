@@ -1,0 +1,86 @@
+(defwidget left []
+	   (box :orientation "h"
+		:space-evenly "false"
+		:halign "start"
+		(arch)
+		(workspaces)))
+
+(defwidget arch []
+	   (box :orientation "h"
+		:space-evenly "false"
+		:class "arch"		
+		(button :timeout "200ms"
+			:onclick "rofi -show drun -show-icons &"
+			(image :path "./logo-artix.png"
+			       :image-width "34"
+			       :preserve-aspect-ratio true))))
+
+(defpoll ws_occupied :interval "100ms" "scripts/workspaces occupied")
+(defpoll ws_active :interval "100ms" "scripts/workspaces active")
+
+(defwidget ws [number]
+	   (box :orientation "h"
+		:space-evenly "false"
+		:class {matches(ws_active, number) ? "ws_active" :
+		               matches(ws_occupied, number) ? "ws_occupied" :
+			       "ws"}
+		(button 		   
+		   :timeout "100ms"
+		   :onclick "hyprctl dispatch workspace ${number}"
+		   number)))
+
+(defwidget workspaces []
+	   (box :orientation "h"
+		:space-evenly "false"
+		(ws :number 1)
+		(ws :number 2)
+		(ws :number 3)
+		(ws :number 4)
+		(ws :number 5)
+		(ws :number 6)
+		(ws :number 7)
+		(ws :number 8)
+		(ws :number 9)))
+
+(defwidget center []
+	   (box :orientation "h"
+		:space-evenly false
+		:halign "center"
+		(time_date)))
+
+(defpoll td :interval "5s" "scripts/timedate")
+
+(defwidget time_date []
+	   (box :orientation "h"
+		:space-evenly "false"
+		:class "timedate"
+		(label
+		 :text "${td.A} ${td.d}, ${td.th} ${td.y}, ${td.h}:${td.m}")))
+
+(defwidget right []
+	   (box :orientation "h"
+		:space-evenly false
+		:halign "end"
+		(systray :class "tray"
+			 :spacing 5
+			 :orientation "h"
+			 :space-evenly false
+			 :prepend-new true)))
+
+(defwidget bar []
+	   (centerbox :orientation "h"
+		      :class "mybar"
+		      (left)
+		      (center)
+		      (right)))
+
+(defwindow bar []
+	   :monitor 0
+	   :geometry (geometry :x 0
+			       :y 0
+			       :width "100%"
+			       :height "45px"
+			       :anchor "top center")
+	   :stacking "fg"
+	   :exclusive true
+	   (bar))

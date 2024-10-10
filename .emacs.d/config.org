@@ -73,7 +73,10 @@
           org-bullets
           counsel
           svg-lib
-          xelb))
+          xelb
+          yuck-mode
+          ligature
+          highlight-indent-guides))
 
   (dolist (package package-list)
     (straight-use-package package))
@@ -223,19 +226,6 @@
                :extend     'unspecified
                :inherit    'unspecified)))
 
-  (defun my/left-frame ()
-    "Create a new frame in dark mode."
-    (interactive)
-    (setq buffer (treemacs))
-    (switch-to-buffer buffer)
-    (setq-local mode-line-format nil)
-    (delete-other-windows)
-    (modify-frame-parameters (selected-frame)
-                             '((background-color . "#f2e9e1")
-                               (foreground-color . "#797593")
-                               (cursor-color     . "#575279")
-                               (width            . 32))))
-
   (defun my/agenda-frame (&optional sufix)
     "Create a new frame for org-agenda-mode custom view."
     (interactive)
@@ -365,17 +355,17 @@
 #+BEGIN_SRC emacs-lisp
 
   (set-face-attribute 'default nil
-                    :family "Iosevka Nerd Font"
+                    :family "JetBrainsMono Nerd Font"
                     :weight 'light
-                    :height 140)
+                    :height 130)
 
   (set-face-attribute 'bold nil
-                    :family "Iosevka Nerd Font"
+                    :family "JetBrainsMono Nerd Font"
                     :weight 'regular)
 
   (set-face-attribute 'italic nil
-                    :family "Victor Mono"
-                    :height 140
+                    :family "JetBrainsMono Nerd Font"
+                    :height 130
                     :weight 'regular
                     :slant 'italic)
 
@@ -383,8 +373,8 @@
                   (font-spec :name "Inconsolata") nil)
 
   (set-fontset-font t '(#xe000 . #xffdd)
-                  (font-spec :name "Iosevka Nerd Font"
-                             :size 16) nil)
+                  (font-spec :name "JetBrainsMono Nerd Font"
+                             :size 14) nil)
 
 #+END_SRC
 
@@ -399,6 +389,35 @@
   (setq x-underline-at-descent-line nil
         x-use-underline-position-properties t
         underline-minimum-offset 10)
+#+END_SRC
+
+** Ligatures
+#+BEGIN_SRC emacs-lisp
+
+  (require 'ligature)
+  ;; Enable the "www" ligature in every possible major mode
+  ;;(ligature-set-ligatures 't '("www"))
+  ;; Enable traditional ligature support in eww-mode, if the
+  ;; `variable-pitch' face supports it
+  ;;(ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+  ;; Enable all Cascadia Code ligatures in programming modes
+  (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+                                       ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                                       "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                                       "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                                       "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                                       "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+                                       "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                                       "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                                       ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                                       "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                                       "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                                       "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                                       "\\\\" "://"))
+  ;; Enables ligature checks globally in all buffers. You can also do it
+  ;; per mode with `ligature-mode'.
+  (add-hook 'prog-mode-hook #'ligature-mode)
+
 #+END_SRC
 ** Cursor
 #+BEGIN_SRC emacs-lisp
@@ -416,6 +435,19 @@
   (require 'display-line-numbers)
   (setq display-line-numbers-type 'relative)
   (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+
+#+END_SRC
+** Indent Guides
+#+BEGIN_SRC emacs-lisp
+
+  (require 'highlight-indent-guides)
+  (setq highlight-indent-guides-method 'character
+        highlight-indent-guides-character ?|)
+
+  (set-face-foreground
+   'highlight-indent-guides-character-face "#cecacd")
+
+  (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
 
 #+END_SRC
 ** Hightlight current line

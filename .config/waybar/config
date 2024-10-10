@@ -1,7 +1,7 @@
 {
     // "layer": "top", // Waybar at top layer
     // "position": "bottom", // Waybar position (top|bottom|left|right)
-    "height": 35, // Waybar height (to be removed for auto height)
+    "height": 70, // Waybar height (to be removed for auto height)
     "width": 1920, // Waybar width
     "spacing": 10, // Gaps between modules (4px)
     //"margin-top": 8,
@@ -9,12 +9,12 @@
     //"margin-right": 8,
     //"margin-bottom": 8,
     // Choose the order of the modules
-    "modules-left": ["image#void", "hyprland/workspaces", "hyprland/window"],
+    "modules-left": ["image#artix", "hyprland/workspaces", "hyprland/window"],
     "modules-center": [],
     "modules-right": [ "cpu", "memory", "temperature", "pulseaudio", "network",  "backlight", "battery", "clock", "tray"],
     // Modules configuration
-    "image#void": {
-    		  "path": "/home/lean/.config/waybar/void-logo.png",
+    "image#artix": {
+    		  "path": "/home/lean/.config/waybar/logo-artix.png",
 		  "size": 35,
     },
     "hyprland/workspaces": {
