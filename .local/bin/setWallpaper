@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+IMG=$(realpath $1)
+WALLPAPER=/tmp/desktop_bg.png
+WALLBLOCK=/tmp/image_block.png
+magick $IMG -gravity center -crop 16:9 +repage $WALLPAPER &
+magick $IMG -scale 10% -blur 0x2.5 -resize 1000% $WALLBLOCK &
+
+
+case $XDG_CURRENT_DESKTOP in
+    dwm)
+	wait $!
+	feh --bg-fill $WALLPAPER &
+	;;
+    Hyprland)
+	if [[ $(pgrep -x swww-daemon 2> /dev/null) ]]
+	then
+	    swww img $WALLPAPER --transition-type any &
+	else
+	    swww-daemon &
+	    swww img $WALLPAPER --transition-type any &
+	fi	
+	;;
+    *|?)
+    echo "Error:not set Wallpaper"
+    ;;
+esac
+
+exit 0
+    
