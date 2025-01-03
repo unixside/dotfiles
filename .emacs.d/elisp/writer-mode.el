@@ -91,61 +91,68 @@
   (setq org-hide-emphasis-markers t)
   (variable-pitch-mode)
   (face-remap-add-relative 'org-document-title
-			   :family "Roboto Slab"
+			   :family "Latin Modern Sans"
 			   :height 240
 			   :weight 'bold)
   (face-remap-add-relative 'org-document-info
-			   :family "Victor Mono"
+			   :family "fbb"
 			   :height 180
 			   :slant 'italic
-			   :weight 'light)
+			   :weight 'semibold)
   (face-remap-add-relative 'org-level-1
-			   :family "Roboto Slab"
+			   :family "Latin Modern Sans"
 			   :height 200
 			   :weight 'bold)
   (face-remap-add-relative 'org-level-2
-			   :family "Roboto Slab"
+			   :family "Latin Modern Sans"
 			   :height 180
 			   :weight 'bold)
   (face-remap-add-relative 'org-level-3
-			   :family "Roboto Slab"
+			   :family "Latin Modern Sans"
 			   :height 165
 			   :weight 'bold)
   (face-remap-add-relative 'org-level-4
-			   :family "Roboto Slab"
+			   :family "Latin Modern Sans"
 			   :height 155
 			   :weight 'bold)
   (face-remap-add-relative 'org-level-5
-			   :family "Roboto Slab"
+			   :family "Latin Modern Sans"
 			   :height 150
 			   :weight 'bold)
   (face-remap-add-relative 'org-level-6
-			   :family "Roboto Slab"
+			   :family "Latin Modern Sans"
 			   :height 145
 			   :weight 'bold)
   (face-remap-add-relative 'org-level-7
-			   :family "Roboto Slab"
+			   :family "Latin Modern Sans"
 			   :height 145
 			   :weight 'bold)
   (face-remap-add-relative 'org-level-8
-			   :family "Roboto Slab"
+			   :family "Latin Modern Sans"
 			   :height 145
 			   :weight 'bold)
+  (face-remap-add-relative 'italic
+			   :family "Latin Modern Roman"
+			   :height 145)
   (face-remap-add-relative 'variable-pitch
-			   :family "Roboto"
-			   :height 150
-			   :weight 'light)
+			   :family "Latin Modern Sans"
+			   :height 145)
   (face-remap-add-relative 'fixed-pitch
 			   :family "Roboto Mono"
 			   :height 140
 			   :weight 'light)
   (face-remap-add-relative 'bold
-			   :family "Roboto Slab"
+			   :family "Latin Modern Sans"
 			   :height 140
 			   :weight 'bold)
   (face-remap-add-relative 'italic
-			   :family "Victor Mono"
-			   :height 140
-			   :slant  'italic))
+			   :family "BaskervilleF"
+			   :height 145
+			   :weight 'bold
+			   :slant  'italic)
+  (face-remap-add-relative 'org-verbatim
+			   :family "Latin Modern Sans"
+			   :weight 'bold
+			   :slant 'italic))
 
 (provide 'writer-mode)

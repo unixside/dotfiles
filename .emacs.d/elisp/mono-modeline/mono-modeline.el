@@ -15,7 +15,8 @@
 	:background "#4F4F4f"
 	:foreground "#FFFFFF"
 	:weight regular
-	:slant normal)))
+	:slant normal
+	:box (:line-width 3 :color "#4F4F4f"))))
   "Face for status file Read only"
   :group 'mono-modeline)
 
@@ -24,7 +25,8 @@
 	:background "#323232"
 	:foreground "#FFFFFF"
 	:weight regular
-	:slant normal)))
+	:slant normal
+	:box (:line-width 3 :color "#323232"))))
   "Face for status file read and write"
   :group 'mono-modeline)
 
@@ -33,7 +35,8 @@
 	:background "#6D6D6D"
 	:foreground "#FFFFFF"
 	:weight regular
-	:slant normal)))
+	:slant normal
+	:box (:line-width 3 :color "#6D6D6D"))))
   "Face for status file modified"
   :group 'mono-modeline)
 
@@ -42,7 +45,8 @@
 	:background "#DDDDDD"
 	:foreground "#323232"
 	:weight light
-	:slant italic)))
+	:slant italic
+	:box (:line-width 3 :color "#DDDDDD"))))
   "Face for default headerline"
   :group 'mono-modeline)
 
@@ -74,11 +78,11 @@
   :group 'mono-modeline)
 
 (defface header-line-thin
-  '((t (:inherit header-line-default
-		 :box nil
-		 :height 0.1		 
-		 :underline nil
-		 :overline nil)))
+  '((t (:inherit nil
+	:box nil
+	:height 0.1		 
+	:underline nil
+	:overline nil)))
   "Face for nice mode line."
   :group 'mono-modeline)
 
@@ -102,15 +106,14 @@
   "Set modeline like a underline"
   (interactive)
   (setq mode-line-format (list ""))
-  (dolist (face '(mode-line mode-line-active mode-line-inactive))
-    (set-face-attribute face nil
-			:inherit nil
-			:box nil
-			:height 0.1
-			:underline nil
-			:foreground (face-background 'header-line-default)
-			:background (face-background 'header-line-default)
-			:overline nil)))
+    (set-face-attribute 'mode-line-active nil
+			:inherit 'header-line-thin
+			:background (face-background 'header-line-status-RW)
+			:foreground (face-background 'header-line-status-RW))
+    (set-face-attribute 'mode-line-inactive nil
+			:inherit 'header-line-thin
+			:background (face-background 'default)
+			:foreground (face-background 'default)))
 
 (defun mono-nil-mode-line ()
   "Disable modeline mode"
@@ -167,12 +170,12 @@
   (interactive)
   (setq name (concat " " name))
   (list
-   (mono-propertize    ""         (mono-modeline-face-prefix) 0.32)
-   (mono-propertize    prefix     (mono-modeline-face-prefix) 0.16)
-   (mono-propertize    name       'header-line-name 0.16)
-   (mono-propertize    primary    'header-line-primary 0.16)
+   (mono-propertize    ""         (mono-modeline-face-prefix) 0.36)
+   (mono-propertize    prefix     (mono-modeline-face-prefix) 0.18)
+   (mono-propertize    name       'header-line-name 0.18)
+   (mono-propertize    primary    'header-line-primary 0.18)
    (mono-modeline-fill (+ (length secondary) 1))
-   (mono-propertize    secondary  'header-line-secondary 0.16)))
+   (mono-propertize    secondary  'header-line-secondary 0.18)))
 
 (defun mono-modeline-mode ()
   (interactive)

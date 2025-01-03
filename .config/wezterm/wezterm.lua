@@ -1,30 +1,29 @@
 local wezterm = require 'wezterm'
 local act = wezterm.action
-local colors = require('lua/rose-pine').colors()
-local window_frame = require('lua/rose-pine').window_frame()
+local colors = require('lua/rose-pine-dawn').colors()
+-- local window_frame = require('lua/rose-pine').window_frame()
 
 local config = {}
 
-config.font = wezterm.font "JetBrains Mono"
-config.font_size = 12
--- config.color_scheme = 'Gnometerm (terminal.sexy)'
--- config.color_scheme = 'OneDark (base16)'
--- config.color_scheme = 'matrix'
--- config.color_scheme = 'DWM rob (terminal.sexy)'
+config.font = wezterm.font "Iosevka NF"
+config.font_size = 14
+-- config.color_scheme = 'Default Light (base16)'
 config.colors = colors
+-- config.color_scheme = 'iTerm2 Default'
+-- config.color_scheme = 'Dracula (Official)'
 config.window_background_opacity = 1.0
-config.window_frame = window_frame
+-- config.window_frame = window_frame
 config.line_height = 1.0
 config.adjust_window_size_when_changing_font_size = false
 config.default_cursor_style = 'BlinkingBar'
 config.cursor_blink_rate = 400
 config.front_end = "OpenGL"
 config.animation_fps = 1
-config.cursor_blink_ease_in = 'Constant'
-config.cursor_blink_ease_out = 'Constant'
+config.cursor_blink_ease_in = 'Linear'
+config.cursor_blink_ease_out = 'Linear'
 config.enable_tab_bar = true
 config.enable_wayland = false
-config.tab_bar_at_bottom = false
+config.tab_bar_at_bottom = true
 config.show_tab_index_in_tab_bar = true
 config.tab_max_width = 56
 config.use_fancy_tab_bar = false
@@ -38,13 +37,13 @@ config.window_padding = {
 }
 
 -- Show which key table is active in the status area
-wezterm.on('update-right-status', function(window, pane)
-  local name = window:active_key_table()
-  if name then
-    name = 'TABLE: ' .. name
-  end
-  window:set_right_status(name or '')
-end)
+-- wezterm.on('update-right-status', function(window, pane)
+--   local name = window:active_key_table()
+--   if name then
+--     name = 'TABLE: ' .. name
+--   end
+--   window:set_right_status(name or '')
+-- end)
 
 -- wezterm.on('format-window-title', function(tab, pane, tabs, panes, config)
 --   local zoomed = ''
@@ -84,7 +83,6 @@ config.keys = {
       timeout_milliseconds = 1000,
     },
   },
-
 
   -- ScrollByLine
   { key = 'UpArrow', mods = 'SHIFT', action = act.ScrollByLine(-1) },

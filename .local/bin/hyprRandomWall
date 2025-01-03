@@ -1,6 +1,5 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-WALLDIR=$HOME/Imágenes/Wallpapers
-WALLPAPER=$(find $WALLDIR -type f| shuf -n 1)
+WALLPAPER=$(find $HOME/Imágenes/Wallpapers/* -type f| shuf -n 1)
 
 setWallpaper $WALLPAPER

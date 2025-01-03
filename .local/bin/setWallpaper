@@ -3,26 +3,41 @@
 IMG=$(realpath $1)
 WALLPAPER=/tmp/desktop_bg.png
 WALLBLOCK=/tmp/image_block.png
-magick $IMG -gravity center -crop 16:9 +repage $WALLPAPER &
-magick $IMG -scale 10% -blur 0x2.5 -resize 1000% $WALLBLOCK &
+TRANSITIONS=(any fade wipe wave left right)
 
+setWall () {
+    swww img $IMG\
+	--resize crop\
+	--transition-type $(printf "%s\n" ${TRANSITIONS[@]} | shuf -n1 )\
+	--transition-step 100\
+	--transition-duration 4
+}
+
+magick $IMG -scale 10% -blur 0x2.5 -resize 1000% $WALLBLOCK &
+magick $IMG -gravity center -crop 16:9 +repage $WALLPAPER &
 
 case $XDG_CURRENT_DESKTOP in
+    "")
+	if [[ $(pgrep -x Xorg) ]]
+	then
+	    feh --bg-fill $WALLPAPER &
+	fi
+	;;
     dwm)
-	wait $!
 	feh --bg-fill $WALLPAPER &
 	;;
     Hyprland)
 	if [[ $(pgrep -x swww-daemon 2> /dev/null) ]]
 	then
-	    swww img $WALLPAPER --transition-type any &
+	    setWall &
 	else
 	    swww-daemon &
-	    swww img $WALLPAPER --transition-type any &
+	    setWall &
 	fi	
 	;;
     *|?)
     echo "Error:not set Wallpaper"
+    exit 1
     ;;
 esac
 

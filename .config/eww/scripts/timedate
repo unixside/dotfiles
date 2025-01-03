@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-TIMEDATE=$(date +'{"h":"%H","m":"%M", "d": "%d", "A": "%A", "th": "%B", "y": "%Y"}')
-
-echo $TIMEDATE

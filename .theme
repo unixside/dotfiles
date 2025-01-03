@@ -1,3 +1,0 @@
-#!/bin/sh
-export THEME_SELECT=/home/leanhdro/.config/Xresources-themes/RosePine
-ln -sf $THEME_SELECT /tmp/Theme

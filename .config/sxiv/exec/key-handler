@@ -9,6 +9,6 @@ do
         "C-c")
             wl-copy < $file ;;
         "C-w")
-            setWallpaper $file ;;
+            $HOME/.local/bin/setWallpaper $file ;;
         esac
 done

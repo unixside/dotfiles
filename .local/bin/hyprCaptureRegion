@@ -198,5 +198,5 @@ do
 done
 
 wait
-sxiv -b -z 80 $FILE
+echo $FILE
 exit 0

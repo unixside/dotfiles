@@ -82,10 +82,16 @@ alias la='eza -la --group-directories-first --icons'
 alias lt='eza --tree'
 
 ## cat to bat
-export BAT_THEME="ansi"
 alias cat='bat'
+export BAT_THEME="ansi"
+
+alias cd=z
+alias cdd=z -
+alias cdi=zi
 
 unsetopt PROMPT_SP
+
+source ~/.zsh-plugins/fzf/fzf-tab/fzf-tab.plugin.zsh 
 
 export FZF_DEFAULT_OPTS="
 	--color=fg:#908caa,bg:#191724,hl:#ebbcba
@@ -94,6 +100,6 @@ export FZF_DEFAULT_OPTS="
 	--color=spinner:#f6c177,info:#9ccfd8
 	--color=pointer:#c4a7e7,marker:#eb6f92,prompt:#908caa"
 
-[ -f $HOME/.theme ] && . $HOME/.theme || echo "THEME_SLECTED not exist"
+eval "$(zoxide init zsh)"
 
-cd $HOME
+

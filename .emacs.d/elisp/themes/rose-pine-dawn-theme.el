@@ -10,9 +10,9 @@
       (love    "#b4637a")
       (gold    "#ea9d34")
       (rose    "#d7827e")
-      (pine    "#286983")
+      (pine    "#00495f")
       (foam    "#56949f")
-      (iris    "#907aa9")
+      (iris    "#433e64")
       (hl-low  "#f4ede8")
       (hl-med  "#dfdad9")
       (hl-high "#cecacd"))
@@ -30,23 +30,6 @@
      `(link                             ((t (:foreground ,foam :underline t))))
      `(link-visited                     ((t (:foreground ,iris :underline t))))
 
-     `(company-echo                     ((t (:background ,overlay))))
-     `(company-echo-common              ((t (:background ,surface))))
-
-     `(company-box-annotation           ((t (:foreground ,text :background ,overlay))))
-     `(company-box-background           ((t (:background ,overlay))))
-     `(company-box-selection            ((t (:background ,hl-med))))
-     `(company-preview                  ((t (:background ,overlay))))
-     `(company-preview-common           ((t (:background ,overlay))))
-
-     `(company-scrollbar-fg             ((t (:background ,muted))))
-     `(company-scrollbar-bg             ((t (:background ,surface))))
-
-     `(company-box-scrollbar            ((t (:foreground ,muted :background ,surface))))
-     `(company-tooltip                  ((t (:background ,overlay))))
-     `(company-tooltip-common           ((t (:background ,overlay))))
-     `(company-tooltip-search           ((t (:background ,overlay))))
-
      `(region                           ((t (:background ,hl-med))))
      `(show-paren-match                 ((t (:background ,hl-med))))
      `(show-paren-match-expression      ((t (:background ,hl-med))))
@@ -54,7 +37,7 @@
      
      ;; Line numbers
      `(line-number                      ((t (:foreground ,muted :background ,base :weight light :slant italic))))
-     `(line-number-current-line         ((t (:foreground ,iris :background ,hl-low :weight bold :slant italic))))          
+     `(line-number-current-line         ((t (:foreground ,iris :background ,hl-low :weight bold :slant italic))))
 
      ;; Windows dividers
      `(window-divider                   ((t (:foreground ,base :background ,base))))
@@ -69,7 +52,20 @@
      ;; Header line
      `(header-line                      ((t (:background ,base :box (:line-width 3 :color ,base)))))
      `(header-line-active               ((t (:background ,base :box (:line-width 3 :color ,base)))))
-     `(header-line-inactive             ((t (:background ,base :box (:line-width 3 :color ,base)))))     
+     `(header-line-inactive             ((t (:background ,base :box (:line-width 3 :color ,base)))))
+
+     ;; Mono modeline
+     `(header-line-default   ((t (:foreground ,text :background  ,overlay :box (:line-width 3 :color ,overlay)))))
+     `(header-line-name      ((t (:foreground ,text :background  ,overlay :weight bold :box (:line-width 3 :color ,overlay)))))
+     `(header-line-primary   ((t (:foreground ,text :background  ,overlay :weight light :slant italic :box (:line-width 3 :color ,overlay)))))
+     `(header-line-secondary ((t (:foreground ,muted :background ,overlay :weight regular :box (:line-width 3 :color ,overlay)))))
+
+     `(header-line-status-** ((t (:foreground ,base :background ,love :weight bold :box (:line-width 3 :color ,love)))))
+     `(header-line-status-RO ((t (:foreground ,base :background ,text   :weight bold :box (:line-width 3 :color ,foam)))))
+     `(header-line-status-RW ((t (:foreground ,base :background ,text  :weight bold :box (:line-width 3 :color ,text)))))
+
+     `(header-line-thin      ((t (:foreground ,text :background ,text))))
+     `(header-line-thin-tty  ((t (:foreground ,text :background ,text))))
 
      ;; Font locks
      `(font-lock-warning-face           ((t (:foreground ,love   :weight regular))))
@@ -77,10 +73,10 @@
      `(font-lock-function-call-face     ((t (:foreground ,rose   :weight semilight :slant normal))))
      `(font-lock-variable-name-face     ((t (:foreground ,text   :weight regular   :slant normal))))
      `(font-lock-variable-use-face      ((t (:foreground ,text   :weight semilight :slant normal))))
-     `(font-lock-keyword-face           ((t (:foreground ,pine   :weight regular   :slant italic))))
+     `(font-lock-keyword-face           ((t (:foreground ,pine :weight regular   :slant italic ))))
      `(font-lock-comment-face           ((t (:foreground ,muted  :weight light     :slant italic))))
      `(font-lock-comment-delimiter-face ((t (:foreground ,muted  :weight regular   :slant italic))))
-     `(font-lock-type-face              ((t (:foreground ,foam   :weight regular   :slant italic))))
+     `(font-lock-type-face              ((t (:foreground ,rose   :weight regular   :slant italic))))
      `(font-lock-constant-face          ((t (:foreground ,foam   :weight light     :slant italic))))
      `(font-lock-builtin-face           ((t (:foreground ,love   :weight regular   :slant normal))))
      `(font-lock-preprocessor-face      ((t (:foreground ,love   :weight light     :slant normal))))
