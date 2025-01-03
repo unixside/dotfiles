@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-notify-send -t 10000\
-	    -u critical\
-	    "<span font='Iosevka Nerd Font-12'>Low Battery</span>"
