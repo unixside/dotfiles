@@ -1,79 +1,67 @@
-# Enable autocomplete commands
-autoload -U compinit
-compinit
+# Plugins
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+[ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
+[ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+source "${ZINIT_HOME}/zinit.zsh"
 
-# Autocomplete via keys
-zstyle ':completion:*' menu select
+## Add inb zsh plugins
+zinit light zsh-users/zsh-syntax-highlighting
+zinit light zsh-users/zsh-completions
+zinit light zsh-users/zsh-autosuggestions
+zinit light Aloxaf/fzf-tab
 
-# Find news executable on $PATH
+## Add in snippets
+zinit snippet OMZP::git
+zinit snippet OMZP::archlinux
+
+# Keybindings
+bindkey -e
+bindkey -M emacs '^p' history-search-backward
+bindkey -M emacs '^n' history-search-forward
+
+# Load completions
+autoload -Uz compinit && compinit
+
+zinit cdreplay -q
+
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-zu}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLOR}"
+zstyle ':completion:*' menu no
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+
+### new executables
 zstyle ':completion:*' rehash true
 
-# Auntocomplete alias
-setopt completealiases
-
 # Enable history
-HISTFILE=~/.zsh_history
 HISTSIZE=10000
+HISTFILE=~/.zsh_history
 SAVEHIST=10000
+HISTDUP=erase
 setopt appendhistory
+setopt sharehistory
+setopt hist_ignore_space
+setopt hist_save_no_dups
+setopt hist_ignore_dups
 
-# Ignore deplicates in history
-setopt HIST_IGNORE_DUPS
+# Variables
+export EDITOR='emacs -nw'
+export BAT_THEME=ansi
 
-# # Remenber lasts visited directories 
-# DIRSTACKFILE="$HOME/.cache/zsh/dirs"
-# if [[ -f $DIRSTACKFILE ]] && [[ $#dirstack -eq 0 ]]; then
-#   dirstack=( ${(f)"$(< $DIRSTACKFILE)"} )
-#   [[ -d $dirstack[1] ]] && cd $dirstack[1]
-# fi
-# chpwd() {
-#   print -l $PWD ${(u)dirstack} >$DIRSTACKFILE
-# }
+# Aliases
+alias l='eza '
+alias la='eza -la --group-directories-first --icons=always '
+alias lt='eza --tree '
 
-# DIRSTACKSIZE=20
+alias cat='bat'
+alias top='htop'
 
-setopt autopushd pushdsilent pushdtohome
-
-## Delete duplicate entries
-setopt pushdignoredups
-
-## Revert operators +/-.
-setopt pushdminus
-
-# Plugins
-PLUGDIR=/usr/share/zsh/plugins
-
-## Syntax highlighting
-source $PLUGDIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
-
-## Automatic autocomplete suggestions 
-source $PLUGDIR/zsh-autosuggestions/zsh-autosuggestions.zsh
-
-## Search substring of command on history
-source $PLUGDIR/zsh-history-substring-search/zsh-history-substring-search.zsh
-### Use keys Ctrl-p and Ctrl-n for navigate
-bindkey -M emacs '^P' history-substring-search-up
-bindkey -M emacs '^N' history-substring-search-down
-
-# Enable colors
-autoload -U colors && colors
-
-# Prompt
-PROMPT=$'%F{red}[%F{yellow}%{\e[3m%}%n%F{green}@%F{blue}%m%{\e[0m%}%F{red}]%F{cyan}:%F{magenta}%~ %F{white}$ %f'
-
-# Alias
-
-## personal
+# Create an alias to interact with the repository
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME'
 
-## ls to eza
-alias ls='eza'
-alias la='eza -la --group-directories-first --icons'
-alias lt='eza --tree'
+# Prompt
+eval "$(starship init zsh)"
 
-## cat to bat
-export BAT_THEME="ansi"
-alias cat='bat'
-
-unsetopt PROMPT_SP
+# Shell integrations
+eval "$(fzf --zsh)"
+eval "$(zoxide init --cmd cd zsh)"
