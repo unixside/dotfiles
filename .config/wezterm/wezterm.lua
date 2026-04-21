@@ -39,6 +39,11 @@ config.initial_rows = 30
 config.initial_cols = 200
 config.window_decorations = " NONE "
 
+-- Forzar un tema de cursor compatible
+config.xcursor_theme = 'Adwaita'
+config.xcursor_size = 24
+
+
 config.window_padding = {
 	left = 24,
 	right = 24,

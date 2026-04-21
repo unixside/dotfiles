@@ -6,7 +6,7 @@
     // "width": 1280, // Waybar width
     "spacing": 4, // Gaps between modules (4px)
     // Choose the order of the modules
-    "output" : "DP-1",
+    "output" : "eDP-1",
     "modules-left": [
     "custom/arch",
     "niri/workspaces",
