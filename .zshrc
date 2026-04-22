@@ -45,7 +45,7 @@ setopt hist_save_no_dups
 setopt hist_ignore_dups
 
 # Variables
-export EDITOR='emacs -nw'
+export EDITOR='emacs -nw -q'
 export BAT_THEME=ansi
 
 # Aliases

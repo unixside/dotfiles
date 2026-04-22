@@ -8,7 +8,7 @@
     // Choose the order of the modules
     "output" : "eDP-1",
     "modules-left": [
-    "custom/arch",
+    "custom/cachy",
     "niri/workspaces",
     "custom/separator",
     "niri/window",
@@ -19,6 +19,8 @@
 	"tray",
     "custom/separator",
     "memory",
+    "custom/separator",
+    "battery",
     "custom/separator",
     "cpu",
     "custom/separator",
@@ -82,12 +84,21 @@
         "format-disconnected": "Disconnected ⚠",
         "format-alt": "{ifname}: {ipaddr}/{cidr}"
     },
-    "custom/arch": {
-      "format": "󰣇",
+    "custom/cachy": {
+      "format": "  ",
       "on-click": "rofi -show drun -show-icons",
       "tooltip": false,
     },
     "custom/separator" : {
      "format": "|",
     },
+    "battery": {
+    "bat": "BAT0",
+    "interval": 60,
+    "format": " {icon} {capacity}%",
+    "format-icons": {
+    "default": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+    "charging": ["󰢟", "󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"]
+    },
+    }
 }

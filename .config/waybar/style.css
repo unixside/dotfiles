@@ -94,3 +94,12 @@ button:hover {
     padding-right: 0.3em;
     font-weight: bold;
 }
+
+#custom-cachy {
+    background-image: url("/home/lean/.config/waybar/CachyOS_Logo.svg.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    min-width: 32px;
+    padding-left: 1em;
+}
