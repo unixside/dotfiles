@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+export WAYLAND_DISPLAY=wayland-1
+
+defaultsocket=/run/user/1000/wayland-a-awww-daemon..sock
+overlaysocket=/run/user/1000/wayland-a-awww-daemon.overlay.sock
+
+function echolog {
+    DATE=$(date '+%Y-%m-%d %H:%M:%S')
+    echo $1 && echo "[$DATE] $1" >> /tmp/setWallpaper.log
+}
+
+function checksock  {
+    socket=$1
+    [ -S $soket ] && socat /dev/null "UNIX-CONNECT:$socket" 
+}
+
+function randomWallpaper {
+    echo "$(find ~/*/Wallpapers/* -type f | shuf -n 1)"
+}
+
+function getWallpaper {
+    if ! [ -z $1 ]
+    then
+        local WALLPAPER=$(realpath "$1")
+        echolog "Set wallpaper with arg: $WALLPAPER1" 
+    else    
+        local WALLPAPER=$(randomWallpaper)
+    fi
+    echo $WALLPAPER
+}
+
+function loadWallpaper {
+    local WALLPAPER=$1
+    local NAMESPACE=$2
+
+    local ARGS="-t any"
+    local MSG="Load wallpaper: $WALLPAPER"
+
+    if [[ "$NAMESPACE" ]]
+    then
+        ARGS="$ARGS -n $NAMESPACE"
+        MSG="$MSG, namespace: $NAMESPACE"
+    fi
+    
+    if [ -f $WALLPAPER ]
+    then
+        local COMMAND="awww img ${WALLPAPER} ${ARGS}"
+        $COMMAND
+        echolog "${MSG}"
+    else
+        echolog "\033[1;31m[ERROR]:\033[0m not such file $WALLPAPER1"
+        exit 1
+    fi    
+}
+
+if ! pgrep -x awww-daemon > /dev/null
+then
+    echolog "No instance of awww is currently running."
+
+    awww-daemon &
+    echolog "Lounch awww-daemon standar instance."
+    
+    awww-daemon -n overlay &
+    echolog "Lounch awww-daemon overlay instance."
+
+    until checksock $defaultsocket && checksock $overlaysocket
+    do
+        sleep 0.5
+        echo '.'
+    done
+fi
+
+WALLPAPER1=$(getWallpaper $1)
+WALLPAPER2=$(getWallpaper $2)
+
+loadWallpaper $WALLPAPER1 && loadWallpaper $WALLPAPER2 overlay
+
+exit 0
