@@ -280,8 +280,7 @@ spawn-at-startup "blueman-applet"
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
-spawn-sh-at-startup "awww-daemon"
-spawn-sh-at-startup "awww-daemon -n overlay"
+spawn-sh-at-startup "/home/lean/.local/bin/setWallpaper"
 
 hotkey-overlay {
     // Uncomment this line to disable the "Important Hotkeys" pop-up at startup.
@@ -357,6 +356,24 @@ window-rule {
     open-maximized true
 }
 
+window-rule {
+    match app-id=r#"com.mitchellh.ghostty"#
+    background-effect {
+        blur true
+        noise 0.05
+        saturation 1
+    }
+}
+
+layer-rule {
+    match namespace="waybar"
+    background-effect {
+        blur true
+        noise 0.05
+        saturation 1
+    }
+}
+
 binds {
     // Keys consist of modifiers separated by + signs, followed by an XKB key name
     // in the end. To find an XKB name for a particular key, you may use a program
@@ -373,8 +390,8 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
-    Mod+T hotkey-overlay-title="Open a Terminal: alacritty" { spawn "wezterm"; }
-    Mod+D hotkey-overlay-title="Run an Application: fuzzel" { spawn-sh "rofi -show drun -show-icons"; }
+    Mod+T hotkey-overlay-title="Open a Terminal: Ghostty" { spawn "ghostty"; }
+    Mod+D hotkey-overlay-title="Run an Application: rofi" { spawn-sh "rofi -show drun -show-icons"; }
     Mod+E hotkey-overlay-title="Run my prefer text editor"  { spawn-sh "emacs"; }
         // Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
     Mod+Shift+B hotkey-overlay-title="Reload Waybar Configuration" { spawn-sh "killall -SIGUSR2 waybar"; }
@@ -644,4 +661,8 @@ gestures {
         hot-corners {
                 off
         }
+}
+
+recent-windows {
+    off
 }

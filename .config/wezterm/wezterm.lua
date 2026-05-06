@@ -1,10 +1,10 @@
 local wezterm = require('wezterm')
 
 -- Wezterm Configuration
-local theme = require('lua/rose-pine').main
+-- local theme = require('lua/rose-pine').main
 local config = wezterm.config_builder()
 
-config.font = wezterm.font "Iosevka NF"
+config.font = wezterm.font "JetBrains Mono"
 
 config.font_rules = {
     {
@@ -17,10 +17,11 @@ config.font_rules = {
     },
 }
 
-config.font_size = 16.5
+config.font_size = 13.0
 config.line_height = 1.0
 config.enable_wayland = true
-config.colors = theme.colors()
+config.color_scheme = 'iTerm2 Pastel Dark Background'
+-- config.colors = theme.colors()
 -- config.color_scheme = 'Catppuccin Mocha'
 -- config.color_scheme = 'Black Metal (Bathory) (base16)'
 
@@ -28,7 +29,7 @@ config.colors = theme.colors()
 -- config.color_scheme = 'Modus Vivendi Tinted (Gogh)'
 config.tab_bar_at_bottom = false
 config.use_fancy_tab_bar = false
-config.window_background_opacity = 1.0
+config.window_background_opacity = 0.9
 config.default_cursor_style = 'BlinkingBlock'
 config.animation_fps = 1
 config.cursor_blink_ease_in = 'Constant'

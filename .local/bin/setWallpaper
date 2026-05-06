@@ -72,9 +72,9 @@ then
     done
 fi
 
-WALLPAPER1=$(getWallpaper $1)
-WALLPAPER2=$(getWallpaper $2)
+WALLPAPER1="$(getWallpaper $1)"
+WALLPAPER2="$(getWallpaper $2)"
 
-loadWallpaper $WALLPAPER1 && loadWallpaper $WALLPAPER2 overlay
+loadWallpaper "$WALLPAPER1" && loadWallpaper "$WALLPAPER2" "overlay"
 
 exit 0
