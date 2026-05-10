@@ -1,0 +1,10 @@
+[Unit]
+Description=Change Wallpaer
+After=graphical-session.target awww@default.service awww@overlay.service
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/setWallpaper
+
+[Install]
+WantedBy=graphical-session.target

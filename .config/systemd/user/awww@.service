@@ -1,0 +1,10 @@
+[Unit]
+Description=Awww Wayland Wallpaper Daemon - %I
+After=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/awww-daemon --namespace %i
+Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target
