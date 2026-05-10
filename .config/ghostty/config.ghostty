@@ -1,13 +1,14 @@
 font-family = "Iosevka Comfy"
-font-size = 15
-theme = iTerm2 Pastel Dark Background
-background-opacity = 0.8
+font-size = 14.0
+theme = Rose Pine
+background-opacity = 1.0
 background-blur = 10
 window-decoration = none
 window-padding-x = 30
 window-padding-y = 30
 window-show-tab-bar = never
 shell-integration = zsh
+shell-integration-features = no-cursor
 cursor-style = block
 custom-shader = shaders/cursor_warp.glsl
 custom-shader = shaders/ripple_cursor.glsl
