@@ -1,30 +1,26 @@
 // -*- mode: jsonc -*-
 {
-    // "layer": "top left", // Waybar at top layer
+    "layer": "overlay", // Waybar at top layer
     // "position": "bottom", // Waybar position (top|bottom|left|right)
     "height": 45, // Waybar height (to be removed for auto height)
     // "width": 1280, // Waybar width
-    "spacing": 4, // Gaps between modules (4px)
+    "spacing": 10, // Gaps between modules (4px)
     // Choose the order of the modules
     "output" : "eDP-1",
     "modules-left": [
-    "custom/cachy",
+    "custom/arch",
     "niri/workspaces",
     "custom/separator",
     "niri/window",
     ],
     "modules-center": [
+    "clock",
     ],
     "modules-right": [        
 	"tray",
-    "custom/separator",
     "memory",
-    "custom/separator",
-    "battery",
-    "custom/separator",
     "cpu",
-    "custom/separator",
-    "clock",
+    "battery",    
     ],
     // Modules configuration
     "niri/workspaces": {
@@ -89,13 +85,19 @@
       "on-click": "rofi -show drun -show-icons",
       "tooltip": false,
     },
+    "custom/arch": {
+	"format": "",
+	"on-click": "rofi -show drun -show-icons",
+	"tooltip": false,
+    },
     "custom/separator" : {
      "format": "|",
+     "tooltip": false,
     },
     "battery": {
     "bat": "BAT0",
     "interval": 60,
-    "format": " {icon} {capacity}%",
+    "format": " BAT: {capacity}% ",
     "format-icons": {
     "default": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
     "charging": ["󰢟", "󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"]

@@ -55,6 +55,7 @@ alias lt='eza --tree '
 
 alias cat='bat'
 alias top='htop'
+alias sudo='doas'
 
 # Create an alias to interact with the repository
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME'

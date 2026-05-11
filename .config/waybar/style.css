@@ -8,7 +8,7 @@
 }
 
 window#waybar {
-    background-color: @base;
+    background-color: rgba(0,0,0,0.7);
     /* border-bottom: 3px solid rgba(100, 114, 125, 0.5); */
     color: @text;
     transition-property: background-color;
@@ -96,10 +96,10 @@ button:hover {
 }
 
 #custom-cachy {
-    background-image: url("/home/lean/.config/waybar/CachyOS_Logo.svg.png");
+    background-image: url("/home/lean/.config/waybar/Logo.png");
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
-    min-width: 32px;
+    min-width: 24px;
     padding-left: 1em;
 }
