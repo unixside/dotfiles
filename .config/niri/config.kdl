@@ -394,6 +394,7 @@ binds {
     Mod+E hotkey-overlay-title="Run my prefer text editor"  { spawn-sh "emacs"; }
         // Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
     Mod+Shift+B hotkey-overlay-title="Reload Waybar Configuration" { spawn-sh "killall -SIGUSR2 waybar"; }
+    Mod+Shift+C { spawn-sh "swaync-client -t -sw"; }
 
     // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
     // Note: the entire command goes as a single argument. It's passed verbatim to `sh -c`.
