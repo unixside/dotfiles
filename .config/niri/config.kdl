@@ -109,8 +109,8 @@ output "DP-1" {
 output "HDMI-A-1" {
         mode "1920x1080@60.000"
         scale 1
-        transform "normal"
-        position x=2560 y=0
+        transform "90"
+        position x=-1080 y=0
 }
 
 // Settings that influence how windows are positioned and sized.
@@ -244,16 +244,16 @@ layout {
         // pixels and match the CSS box-shadow properties.
 
         // Softness controls the shadow blur radius.
-        softness 15
+        softness 5
 
         // Spread expands the shadow.
-        spread 5
+        spread 3
 
         // Offset moves the shadow relative to the window.
         offset x=0 y=5
 
         // You can also change the shadow color and opacity.
-        color "#050505"
+        color "#05050595"
     }
 
     // Struts shrink the area occupied by windows, similarly to layer-shell panels.
@@ -275,7 +275,9 @@ layout {
 // See the binds section below for more spawn examples.
 
 // This line starts waybar, a commonly used bar for Wayland compositors.
-spawn-at-startup "waybar"
+// Dentro de tu config.kdl, añade esto en la sección de autostart o spawn-at-startup
+spawn-at-startup "dbus-update-activation-environment" "--systemd" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP=niri"
+spawn-at-startup "qs"
 spawn-at-startup "blueman-applet"
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
@@ -296,7 +298,7 @@ hotkey-overlay {
 // You can change the path where screenshots are saved.
 // A ~ at the front will be expanded to the home directory.
 // The path is formatted with strftime(3) to give you the screenshot date and time.
-screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+screenshot-path "~/Imágenes/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
 // You can also set this to null to disable saving screenshots to disk.
 // screenshot-path null
@@ -364,12 +366,37 @@ window-rule {
     }
 }
 
+window-rule {
+    match app-id=r#"xdg-desktop-portal-gtk"#
+    open-floating true
+
+    min-width 300
+    max-width 300
+    min-height 500
+    max-height 500
+}
+
 layer-rule {
     match namespace="waybar"
     background-effect {
         blur true
         noise 0.05
         saturation 1
+    }
+
+    shadow {
+        on
+        // Softness controls the shadow blur radius.
+        softness 5
+
+        // Spread expands the shadow.
+        spread 3
+
+        // Offset moves the shadow relative to the window.
+        offset x=0 y=0
+
+        // You can also change the shadow color and opacity.
+        color "#05050595"
     }
 }
 
@@ -666,3 +693,7 @@ gestures {
 recent-windows {
     off
 }
+
+prefer-no-csd
+
+

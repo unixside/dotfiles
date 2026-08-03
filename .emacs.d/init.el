@@ -38,7 +38,7 @@
 	           scroll-conservatively 101
 	           scroll-margin 2)
 
-(setq pop-up-windows nil)
+(setq pop-up-windows t)
 
 ;; Encoding
 (set-default-coding-systems 'utf-8)     ; Default to utf-8 encoding
@@ -93,7 +93,7 @@
 				              (height     . 30)
 				              (left-fringe . 0)
 				              (right-fringe . 0)
-				              (internal-border-width . 30)
+				              (internal-border-width . 24)
 				              (vertical-scroll-bars . nil)
                               (undecorated t))
 	    initial-frame-alist default-frame-alist
@@ -185,7 +185,9 @@
                '((rust-ts-mode rust-mode) . ("rustup" "run" "stable" "rust-analyzer"
                                              :initializationOptions (:check
                                                                      (:command "clippy")))))
-  (add-to-list 'eglot-server-programs '(qml-ts-mode . ("qmlls6"))))
+  (add-to-list 'eglot-server-programs '(qml-ts-mode . ("qmlls6")))
+  (add-hook 'eglot-managed-mode-hook (lambda ()
+                                       (remove-hook 'eglot-flymake-backend t))))
 
 (use-package pyvenv
   :straight (:type git :host github :repo "jorgenschaefer/pyvenv"))
@@ -219,7 +221,7 @@
 ;;; Rust
 (use-package rust-mode
   :straight t
-  :after rust-ts-mode 
+  :after rust-ts-mode
   :bind (:map rust-ts-mode-map
               ("C-c C-c" . #'rust-compile)
               ("C-c C-r" . #'rust-run)
@@ -237,8 +239,8 @@
 ;; Javascript
 (add-to-list 'auto-mode-alist '("\\.mjs\\'" . js-ts-mode))
 
-(use-package jest-test-mode 
-  :straight t 
+(use-package jest-test-mode
+  :straight t
   :commands jest-test-mode
   :hook (typescript-ts-mode js-ts-mode typescript-ts-mode tsx-ts-mode))
 
@@ -256,8 +258,8 @@
   :straight t
   :init
   (global-corfu-mode t)
-  (corfu-popupinfo-mode t)
   :config
+  (corfu-popupinfo-mode t)
   (setq corfu-auto t
 	    corfu-auto-prefix 2
 	    corfu-auto-delay 0.2
@@ -267,7 +269,7 @@
 	    corfu-preview-current nil
 	    corfu-on-exact-match nil
 	    corfu-scroll-margin 5
-	    corfu-popupinfo-delay 1.0))
+	    corfu-popupinfo-delay 0.2))
 
 (use-package corfu-terminal
   :straight t
@@ -280,14 +282,14 @@
   :init
   (setq cape-dict-file "/usr/share/dict/spanish")
   (add-hook 'completion-at-point #'cape-dabbrev)
-  (add-hook 'completion-at-point #'cape-file)  
+  (add-hook 'completion-at-point #'cape-file)
   (add-hook 'completion-at-point #'cape-elisp-block)
   (add-hook 'completion-at-point #'cape-dabbrev)
   (add-hook 'text-mode-hook #'(lambda () (add-to-list 'completion-at-point #'cape-dict))))
 
 (use-package orderless
   :straight t
-  :config 
+  :config
   (setq completion-styles '(substring orderless basic)
 	orderless-component-separator 'orderless-escapable-split-on-space
 	read-file-name-completion-ignore-case t
@@ -299,6 +301,12 @@
 
 ;; Utilities
 (bind-key "C-x C-b" #'ibuffer)
+
+(use-package eldoc
+  :ensure nil
+  :config
+  (setq eldoc-display-functions 'eldoc-display-in-echo-area
+        eldoc-echo-area-prefer-doc-buffer nil))
 
 (use-package iedit
   :straight t
@@ -441,7 +449,7 @@
 
 
 (defun modus-themes-terminal-transparency ()
-  "TODO: docstring"
+  "TODO: docstring."
   (unless (display-graphic-p)
     (set-face-background 'default "unsepecific-bg")
     (set-face-background 'line-number "unsepecific-bg")
@@ -450,23 +458,26 @@
 (use-package modus-themes
   :straight t
   :config
-
-  (use-package rose-pine-themes
-    :straight (:type git :host github :repo "unixside/rose-pine"))
-  (load-theme 'rose-pine :no-confirm))
+  (use-package lean-themes
+    :straight (:type git :host github :repo "unixside/lean-themes")
+    :config
+    (setq lean-themes-to-toggle '(rose-pine-dawn rose-pine))
+    (load-theme 'rose-pine-dawn :no-confirm)
+    (bind-key "C-x t t" #'lean-themes-toggle)))
 
 (use-package lean-modeline
   :straight (:type git :host github :repo "unixside/lean-modeline" :branch "dev")
-  :custom (lean/font-scale 1.1)
   :config
+  (setq lean-modeline-prefix-function 'lean/bespoke-ui-prefix
+        lean-modeline-icon-scale-factor 1.1
+        lean-modeline-text-scale-factor 1.1)
   (lean-modeline-mode t))
 
 (use-package owr-faces
   :straight (:type git :host github :repo "unixside/owr-faces")
   :config
-
   (setq owr-faces-face-attrs-preferences
-        `((default :family "Iosevka Comfy" :weight light :height 140)
+        `((default :family "Aporetic Sans Mono" :weight light :height 160)
 		  (bold :weight bold)
 		  (line-number :slant italic)
 		  (line-number-current-line :slant italic)
@@ -480,26 +491,27 @@
 		  (font-lock-type-face :weight regular)
 		  (font-lock-builtin-face :weight regular)
           (header-line :inherit nil)
-          (org-document-title :family "Latin Modern Sans" :weight bold :height 2.2)
-          (org-document-info :family "Latin Modern Sans" :slant italic)
-          (org-document-info-keyword :family "Roboto Mono")
-          (org-meta-line :family "Roboto Mono")
-          (org-level-1 :family "Latin Modern Sans" :weight bold :height 2.0)
-          (org-level-2 :family "Latin Modern Sans" :weight bold :height 1.8)
-          (org-level-3 :family "Latin Modern Sans" :weight bold :height 1.65)
-          (org-level-4 :family "Latin Modern Sans" :weight bold :height 1.5)
-          (org-level-5 :family "Latin Modern Sans" :weight bold :height 1.2)
-          (org-level-6 :family "Latin Modern Sans" :weight bold :height 1.1)
-          (org-level-7 :family "Latin Modern Sans" :weight bold :height 1.1)
-          (org-level-8 :family "Latin Modern Sans" :weight bold :height 1.1)
-          (variable-pitch :family "Latin Modern Sans" :height 1.1 :weight regular)
-          (fixed-pitch :family "Roboto Mono")
-          (highlight-indent-guides-character-face :inherit font-lock-comment-face :slant normal :weight light)
-          (italic :family "Latin Modern Roman" :slant italic
-                  :weight semibold :height 0.9)
+          (org-document-title :family "Roboto" :weight bold :height 2.2)
+          (org-document-info :family "Roboto" :slant italic)
+          (org-document-info-keyword :family "Aporetic Sans Mono")
+          (org-meta-line :family "Aporetic Sans Mono")
+          (org-italic :family "Roboto Mono")
+          (org-verbatim :family "Roboto Mono" :weight regular)
+          (org-block :family "Roboto Mono" :weight regular)
+          (org-level-1 :family "Roboto Slab" :weight bold :height 2.0)
+          (org-level-2 :family "Roboto Slab" :weight bold :height 1.8)
+          (org-level-3 :family "Roboto Slab" :weight bold :height 1.65)
+          (org-level-4 :family "Roboto Slab" :weight bold :height 1.5)
+          (org-level-5 :family "Roboto Slab" :weight bold :height 1.2)
+          (org-level-6 :family "Roboto Slab" :weight bold :height 1.1)
+          (org-level-7 :family "Roboto Slab" :weight bold :height 1.1)
+          (org-level-8 :family "Roboto Slab" :weight bold :height 1.1)
+          (variable-pitch :family "Roboto" :height 1.1 :weight light)
+          (fixed-pitch :family "Aporetic Sans Mono")
           ,@(mapcar
              (lambda (face)
-               (let ((name (intern (format "rainbow-delimiters-%s-face" (symbol-name face)))))
+               (let ((name (intern (format "rainbow-delimiters-%s-face"
+                                           (symbol-name face)))))
                  `(,name :weight regular)))
              '(depth-1 depth-2 depth-3 depth-4 depth-5 depth-6 depth-7
                        depth-8 depth-9 unmatched mismatched))))
@@ -508,15 +520,7 @@
   (add-hook 'owr-faces-functions-hook 'modus-themes-terminal-transparency)
   (owr-faces-mode t))
 
-;; (use-package highlight-indent-guides
-;;   :straight t
-;;   :hook
-;;   (prog-mode . highlight-indent-guides-mode)
-;;   :config
-;;   (setq highlight-indent-guides-method 'character
-;;         highlight-indent-guides-character ?|))
-
-;; Accent
+;; Packages for Org
 (use-package accent
   :straight t
   :config
@@ -536,11 +540,34 @@
   :ensure nil
   :custom
   (org-image-actual-width 500)
+  (org-indent-mode t)
   :hook
   (org-mode . visual-line-mode)
   (org-mode . variable-pitch-mode)
   (org-mode . (lambda () (org-superstar-mode 1))))
 
+(use-package denote
+  :straight t
+  :config
+  (setq denote-directory (expand-file-name "~/Dropbox/Org/denote/")
+        denote-known-keywords '("ajedrez" "emacs" "desktop")
+        denote-file-type 'org
+        denote-prompts '(subdirectory title)
+        denote-file-name-components-order '(indentifier))
+  
+  (bind-key "M-n n" #'denote)
+  (bind-key "M-n o" #'denote-open-or-create)
+  (bind-key "M-n s" #'denote-subdirectory)
+  (bind-key "M-n l" #'denote-link))
+
+;; Chess
+(use-package chess
+  :straight t)
+
+(use-package pgna-mode
+  :load-path (lambda ()
+               (expand-file-name "~/Repos/pgna-mode")))
+
 (provide 'init)
-;;; init.el ends here 
+;;; init.el ends here
 
