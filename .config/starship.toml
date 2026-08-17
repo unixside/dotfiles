@@ -3,8 +3,7 @@
 
 # format = """$all"""
 
-format = """$directory$character"""
-right_format = "$python$nodejs$rust$golang$git_branch$git_status"
+format = """$directory$git_branch$git_status$character"""
 
 # Inserts a blank line between shell prompts
 add_newline = false
@@ -35,10 +34,6 @@ format = '[$ssh_symbol](bold blue)[$hostname](italic blue)'
 disabled = false
 
 # ~/.config/starship.toml
-
-[git_branch]
-format = 'git:[$branch]($style) '
-style = 'black bold'
 
 # Disable the package module, hiding it from the prompt completely
 [package]
