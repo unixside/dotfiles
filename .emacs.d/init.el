@@ -1,70 +1,98 @@
-;; init.el --- -*- lexical-binding: t -*-
-;;; Package --- Summary
+;;; init.el --- My personal config for GNU/Emacs  -*- lexical-binding: t -*- 
 ;;; Commentary:
 ;;; Code:
 
-;; Minimal config for GNU/Emacs
+;;; Startup
 
-;; Package Manager
-(setq-local straight-check-for-modifications nil)
+;; Disable start-up screen
+(setq-default  inhibit-startup-screen t)
 
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        (or (bound-and-true-p straight-base-dir)
-            user-emacs-directory)))
-      (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+;; Disable startup message
+(setq-default inhibit-startup-message t)
 
-(setq package-enable-at-startup nil)
-(straight-use-package 'use-package)
+;; Disable initial echo message
+(setq-default inhibit-startup-echo-area-message t)    
 
-;; Startup
+;; Set text mode as inital mode
+(setq-default initial-major-mode 'text-mode)
 
-(setq-default  inhibit-startup-screen t               ; Disable start-up screen
-	           inhibit-startup-message t              ; Disable startup message
-	           inhibit-startup-echo-area-message t    ; Disable initial echo message
-	           initial-major-mode 'text-mode
-	           initial-scratch-message ""             ; Empty the initial *scratch* buffer
-	           initial-buffer-choice t               ; Open *scratch* buffer at init
-	           scroll-conservatively 101
-	           scroll-margin 2)
+;; Open *scratch* buffer at init
+(setq-default initial-buffer-choice t)
 
-(setq pop-up-windows t)
+;; Message for the initial *scratch* buffer
+(setq-default initial-scratch-message "")
+
+;; Custom frame title format
+(unless (alist-get 'undecorated initial-frame-alist)
+  (setq-default frame-title-format "GNU/Emacs - %b"))
 
 ;; Encoding
-(set-default-coding-systems 'utf-8)     ; Default to utf-8 encoding
-(prefer-coding-system       'utf-8)     ; Add utf-8 at the front for automatic detection.
-(set-terminal-coding-system 'utf-8)     ; Set coding system of terminal output
-(set-keyboard-coding-system 'utf-8)     ; Set coding system for keyboard input on TERMINAL
-;;(set-language-environment "English")    ; Set up multilingual environment
 
-(setq-default ispell-dictionary "spanish"
-              ispell-alternate-dictionary "/usr/share/dict/spanish"
-              ispell-program-name "hunspell")
+;; Default to utf-8 encoding
+(set-default-coding-systems 'utf-8)
 
+;; Add utf-8 at the front for automatic detection.
+(prefer-coding-system       'utf-8)
 
-;; Clipboard
-(use-package xclip
-  :straight t
+;; Set coding system of terminal output
+(set-terminal-coding-system 'utf-8)
+
+; Set coding system for keyboard input on TERMINAL
+(set-keyboard-coding-system 'utf-8)
+
+;; Set up multilingual environment
+;; (set-language-environment "English")
+
+;;; Preferences
+
+;; Scrolling
+(pixel-scroll-precision-mode 1)
+(setq-default scroll-conservatively 101
+              scroll-margin 0
+              scroll-step 2)
+
+;; Enable pop-up-windows
+(setq pop-up-windows t)
+
+;; Short comfirmation
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;; Auto close brackets
+(electric-pair-mode t)
+
+;; Replace or delete selection text when paste
+(delete-selection-mode 1)
+
+;; Default display width of tabs
+(setq-default tab-width 4)
+
+;; Prefer spaces for indentation by default
+(setq-default indent-tabs-mode nil)
+
+;; Disable backup files
+(setq make-backup-files nil)
+
+;; Dictionary
+(use-package ispell
+  :ensure nil
   :config
-  (setq xclip-program "wl-copy"
-        xclip-method 'wl-copy)
-  (xclip-mode +1))
+  (setq ispell-program-name "hunspell")
+
+  ;; Force Hunspell to find defualt path of Linux
+  (setq ispell-hunspell-dict-paths-alist
+        '(("es_AR" "/usr/share/hunspell/es_AR.aff")))
+
+  ;; Set default dictionary with specific name
+  (setq ispell-dictionary "es_AR"))
 
 ;; Help
 (setq help-window-select t)
 
-(use-package f
-  :straight t)
+;; History
+(use-package savehist
+  :ensure nil
+  :config
+  (savehist-mode t))
 
 ;; Recent files
 (use-package recentf
@@ -72,18 +100,10 @@
   :config
   (setq recentf-max-menu-items 10
 	recentf-max-saved-items 100)
-  (recentf-mode))
+  (recentf-mode)
+  (bind-key "C-x C-r" #'recentf))
 
-;; Packages
-(use-package rainbow-mode
-  :straight t)
-
-(use-package rainbow-delimiters
-  :straight t
-  :init
-  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-
-;; Interface
+;;; Interface
 (use-package frame
   :ensure nil
   :config
@@ -93,79 +113,148 @@
 				              (height     . 30)
 				              (left-fringe . 0)
 				              (right-fringe . 0)
-				              (internal-border-width . 24)
+				              (internal-border-width . 2)
 				              (vertical-scroll-bars . nil)
                               (undecorated t))
 	    initial-frame-alist default-frame-alist
         frame-resize-pixelwise t
         frame-inhibit-implied-resize t)
-  (setq-default window-divider-default-right-width 24
-		        window-divider-default-places 'right-only
-		        left-margin-width 0
-		        right-margin-width 0
-		        window-combination-resize nil)
+  (setq-default window-divider-default-right-width 1
+    	        window-divider-default-places 'right-only
+    	        left-margin-width 0
+    	        right-margin-width 0
+    	        window-combination-resize nil)
   (window-divider-mode t))
 
-(electric-pair-mode t)
+;; Disable Menu bar
 (menu-bar-mode -1)
+
+;; Disable Scroll bar
 (scroll-bar-mode -1)
+
+;; Disable Tools bar
 (tool-bar-mode -1)
+
+;; Disable hightlight to cursor current line
 (global-hl-line-mode -1)
-(pixel-scroll-precision-mode 1)
-(delete-selection-mode 1)
 
-(setq-default tab-width 4)         ; Default display width of tabs
-(setq-default indent-tabs-mode nil) ; Prefer spaces for indentation by default
-(setq make-backup-files nil)
-
-;; (require 'display-line-numbers)
-;; (setq display-line-numbers-type 'relative
-;;       display-line-numbers-width 4)
-
-;; (add-hook 'prog-mode-hook 'display-line-numbers-mode)
-;; (add-hook 'conf-mode-hook 'display-line-numbers-mode)
+;; Line Numbers
+(use-package display-line-numbers
+  :ensure nil
+  :config
+  (setq display-line-numbers-width 3)
+  :hook
+  (prog-mode . display-line-numbers-mode))
 
 ;; Mode line
-(use-package nerd-icons
-  :straight t)
+;; TODO: Write a custom format for mode-line
 
-;; Treesiter, Syntax Highlighting
-(use-package treesit-auto
-  :straight t
-  :custom
-  (treesit-auto-install 'prompt)
+(defun lean-background-transparency (&optional confirm)
+  "Enable transparency when is terminal mode or CONFIRM is t."
+  (when (or confirm (not (display-graphic-p)))
+    (set-face-background 'default "unsepecific-bg")
+    (set-face-background 'line-number "unsepecific-bg")
+    (set-face-background 'fringe "unsepecific-bg")))
+
+(defun lean-apply-black-background ()
+  "Apply black background for apropieate faces."
+  (set-face-background 'default "black")
+  (set-face-background 'line-number "black")
+  (set-face-background 'fringe "black"))
+
+;; Theme
+(require-theme 'modus-themes)
+(setq modus-themes-to-toggle '(modus-operandi modus-vivendi))
+(load-theme 'modus-operandi-tinted :no-confirm)
+(bind-key "C-x t t" #'modus-themes-toggle)
+
+;; Rewrite faces onfly
+(use-package owr-faces
+  :load-path (lambda () (expand-file-name "~/Repos/owr-faces/"))
   :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (setq typescript-ts-mode-indent-offset 4)
-  (global-treesit-auto-mode))
-
-;; Ligatures
-(use-package ligature
-  :straight t
-  :config
-  ;; Enable all Iosevka ligatures in programming modes
-
-  ;; Iosevka fonts
-  (ligature-set-ligatures 'prog-mode
-                          '("<---" "<--"  "<<-" "<-" "->" "-->"
-                            "--->" "<->" "<-->" "<--->" "<---->" "<!--"
-                            "<==" "<===" "<=" "=>" "=>>" "==>" "===>"
-                            ">=" "<=>" "<==>" "<===>" "<====>" "<!---"
-                            "<~~" "<~" "~>" "~~>" "::" ":::" "==" "!=" "===" "!=="
-                            ":=" ":-" ":+" "<*" "<*>" "*>" "<|" "<|>" "|>" "+:" "-:"
-                            "=:" "<******>" "++" "+++"))
+  (setq owr-faces-face-attrs-preferences
+        `((default :family "Iosevka Nerd Font Mono" :weight light :height 150)
+		  (bold :weight bold)
+		  (line-number :slant italic)
+		  (line-number-current-line :slant italic)
+		  (font-lock-keyword-face  :weight regular :slant italic)
+		  (font-lock-constant-face :slant italic)
+		  (font-lock-function-name-face :weight regular :slant italic)
+		  (font-lock-function-call-face :weight regular :slant italic)
+		  (font-lock-variable-name-face :weight regular)
+		  (font-lock-doc-face  :slant italic)
+		  (font-lock-comment-face  :slant italic)
+		  (font-lock-type-face :weight regular)
+		  (font-lock-builtin-face :weight regular)
+          (header-line :inherit nil)
+          (mode-line :box nil)
+          (mode-line-active :box nil)
+          (mode-line-inactive :box nil)
+          (org-document-title :family "Latin Modern Sans"
+                              :weight bold :height 2.2)
+          (org-document-info :family "Iosevka Nerd Font Mono" :slant italic)
+          (org-document-info-keyword :family "Iosevka Nerd Font Sans Mono")
+          (org-meta-line :family "Iosevka Nerd Font Mono")
+          (org-verbatim :family "Roboto Mono" :weight regular :height 1.0)
+          (org-block :family "Iosevka Nerd Font Mono" :weight regular)
+          (org-block-begin-line :family "Roboto Mono")
+          (org-block-end-line :family "Roboto Mono")
+          (org-level-1 :family "Latin Modern Sans" :weight bold :height 1.8)
+          (org-level-2 :family "Latin Modern Sans" :weight bold :height 1.6)
+          (org-level-3 :family "Latin Modern Sans" :weight bold :height 1.55)
+          (org-level-4 :family "Latin Modern Sans" :weight bold :height 1.4)
+          (org-level-5 :family "Latin Modern Sans" :weight bold :height 1.1)
+          (org-level-6 :family "Latin Modern Sans" :weight bold :height 1.0)
+          (org-level-7 :family "Latin Modern Sans" :weight bold :height 1.0)
+          (org-level-8 :family "Latin Modern Sans" :weight bold :height 1.0)
+          (variable-pitch :family "Latin Modern Sans"
+                          :height 1.0 :weight light)
+          (italic :family "Latin Modern Sans" :height 1.0)
+          (fixed-pitch :family "Iosevka Nerd Font Mono")
+          ,@(mapcar
+             (lambda (face)
+               (let ((name (intern (format "rainbow-delimiters-%s-face"
+                                           (symbol-name face)))))
+                 `(,name :weight regular)))
+             '(depth-1 depth-2 depth-3 depth-4 depth-5 depth-6 depth-7
+                       depth-8 depth-9 unmatched mismatched))))
   
-  ;; Enables ligature checks globally in all buffers. You can also do it
-  ;; per mode with `ligature-mode'.
-  (global-ligature-mode t))
+  ;; (add-hook 'owr-faces-functions-hook 'lean/thin-mode-line)
+  (add-hook 'owr-faces-functions-hook 'lean-background-transparency)
+  (owr-faces-mode t))
 
-(use-package yasnippet
-  :straight t
-  :config
-  (yas-global-mode t))
+;;; Programming
 
-;; Force load of `project' from straight
-(straight-use-package 'project)
+;; Languages
+(use-package kdl-mode
+  :vc (:url "https://github.com/taquangtrung/emacs-kdl-mode" :rev :newest))
+
+(use-package markdown-mode
+  :vc (:url "https://github.com/jrblevin/markdown-mode" :rev :newest))
+
+;; Syntax Highlighting with Tree Sitter
+(defvar treesit-modes-list
+  '(("\\.py\\'"  . python-ts-mode)
+    ("\\.js\\'"  . js-ts-mode)
+    ("\\.ts\\'"  . typescript-ts-mode)
+    ("\\.jsx\\'" . tsx-ts-mode)
+    ("\\.tsx\\'" . tsx-ts-mode)
+    ("\\.rs\\'"  . rust-ts-mode)
+    ("\\.cpp\\'" . c++-ts-mode)
+    ("\\.c\\'"   . c-ts-mode)
+    ("\\.lua\\'" . lua-ts-mode))
+  "List of extensions and Tree Sitter Modes for add to `auto-mode-alist'.")
+
+(dolist (mode treesit-modes-list)
+  (add-to-list 'auto-mode-alist mode))
+
+;; Add Tree Sitter Modes with hooks
+(add-hook 'sh-mode-hook #'bash-ts-mode)
+
+;; Options for specific modes
+(setq typescript-ts-mode-indent-offset 4)
+
+;; Project
 (require 'project)
 
 ;; Eglot, Client for Language Servers Programming
@@ -179,222 +268,93 @@
     tsx-ts-mode
     lua-ts-mode
     c-ts-mode
-    qml-ts-mode) . eglot-ensure)
+    qml-ts-mode) . eglot-ensure)  
   :config
-  (add-to-list 'eglot-server-programs
-               '((rust-ts-mode rust-mode) . ("rustup" "run" "stable" "rust-analyzer"
-                                             :initializationOptions (:check
-                                                                     (:command "clippy")))))
-  (add-to-list 'eglot-server-programs '(qml-ts-mode . ("qmlls6")))
-  (add-hook 'eglot-managed-mode-hook (lambda ()
-                                       (remove-hook 'eglot-flymake-backend t))))
+  (add-to-list
+   'eglot-server-programs
+   '((rust-ts-mode rust-mode) .
+     ("rustup" "run" "stable" "rust-analyzer"
+      :initializationOptions (:check
+                              (:command "clippy")))))
+  (add-to-list 'project-vc-extra-root-markers "tsconfig.json"))
 
-(use-package pyvenv
-  :straight (:type git :host github :repo "jorgenschaefer/pyvenv"))
+;; Check erros on the fly
+(use-package flymake
+  :ensure nil
+  :config  
+  (setq flymake-indicator-type 'margins
+        flymake-margin-indicator-position 'right-margin))
 
-;; Projectile + Flycheck
-(use-package projectile
-  :straight t
-  :init
-  (projectile-mode +1)
-  :bind-keymap
-  ("C-c p" . projectile-command-map))
+;;; Utilities
 
-(use-package flycheck
-  :straight t
-  :init (global-flycheck-mode))
-
-(use-package flycheck-eglot
-  :straight t
-  :after (flycheck eglot)
+;; Mini Buffer Completions
+(use-package minibuffer
+  :ensure nil
   :config
-  (global-flycheck-eglot-mode +1))
+  ;; Do not inform me about the default keybindings to select a
+  ;; candidate.
+  (setq completion-show-help nil)
 
-(use-package flycheck-projectile
-  :straight t
-  :after (flycheck projectile))
+  ;; Do not print messages in the echo area that pertain to
+  ;; completion---those are distracting.
+  (setq completion-show-inline-help nil)
 
-;; Configuratios for language
-(use-package qml-ts-mode
-  :straight (:type git :host github :repo "xhcoding/qml-ts-mode"))
+  ;; Show useful annotations in various minibuffer prompts (though the
+  ;; `marginalia' package greatly improves this).
+  (setq completions-detailed t)
 
-;;; Rust
-(use-package rust-mode
-  :straight t
-  :after rust-ts-mode
-  :bind (:map rust-ts-mode-map
-              ("C-c C-c" . #'rust-compile)
-              ("C-c C-r" . #'rust-run)
-              ("C-c C-t" . #'rust-test)
-              ("C-c C-k" . #'rust-check)))
+  ;; Do not use rows and columns for completions: a single vertical
+  ;; list is easier to follow.
+  (setq completions-format 'one-column)
 
-;;; KDL
-(use-package kdl-mode
-  :straight t)
+  ;; Put an upper limit to the Completions window, so that it does not
+  ;; disorient me.
+  (setq completions-max-height 12)
 
-;;; Lua
-(use-package lua-mode
-  :straight t)
+  ;; Rely on previous inputs to surface candidates towards the top of
+  ;; the list (enable the built-in `savehist-mode' to persist
+  ;; history).
+  (setq completions-sort 'historical)
 
-;; Javascript
-(add-to-list 'auto-mode-alist '("\\.mjs\\'" . js-ts-mode))
+  ;; Show the Completions buffer if I hit TAB but there is no unique match yet.
+  (setq completion-auto-help t)
 
-(use-package jest-test-mode
-  :straight t
-  :commands jest-test-mode
-  :hook (typescript-ts-mode js-ts-mode typescript-ts-mode tsx-ts-mode))
+  ;; Never switch to the Completions buffer when I type TAB, because I
+  ;; want to select candidates while the minibuffer is still in focus,
+  ;; per `minibuffer-visible-completions'.  This has the advantage of
+  ;; auto-updating the completions as I type.
+  (setq completion-auto-select nil
+        minibuffer-visible-completions t)
 
-;;; Markdown
-(use-package markdown-mode
-  :straight t
-  :commands gfm-mode markdown-mod
-  :mode
-  ("README\\.md\\'" . gfm-mode)
-  ("\\.md\\'" . markdown-mode)
-  ("\\.markdown\\'" . markdown-mode))
+  ;; Those two are also relevant for the `completion-category-overrides', which I
+  ;; cover elsewhere in this article.
+  (setq completion-eager-display t)
+  (setq completion-eager-update t)
 
-;; Autocompletion
-(use-package corfu
-  :straight t
-  :init
-  (global-corfu-mode t)
-  :config
-  (corfu-popupinfo-mode t)
-  (setq corfu-auto t
-	    corfu-auto-prefix 2
-	    corfu-auto-delay 0.2
-	    corfu-separator ?\s
-	    corfu-quit-at-boundary nil
-	    corfu-quit-no-match t
-	    corfu-preview-current nil
-	    corfu-on-exact-match nil
-	    corfu-scroll-margin 5
-	    corfu-popupinfo-delay 0.2))
+  ;; Pattern-matching styles to interpret our input in every context.
+  (setq completion-styles '(basic substring initials flex))
 
-(use-package corfu-terminal
-  :straight t
-  :config
-  (unless (display-graphic-p)
-    (corfu-terminal-mode +1)))
+  ;; An exception to the above for the `file' category, where we
+  ;; specifically want to use the `partial-completion' style:
+  (setq completion-category-overrides
+        '((file . ((styles partial-completion)))))
 
-(use-package cape
-  :straight t
-  :init
-  (setq cape-dict-file "/usr/share/dict/spanish")
-  (add-hook 'completion-at-point #'cape-dabbrev)
-  (add-hook 'completion-at-point #'cape-file)
-  (add-hook 'completion-at-point #'cape-elisp-block)
-  (add-hook 'completion-at-point #'cape-dabbrev)
-  (add-hook 'text-mode-hook #'(lambda () (add-to-list 'completion-at-point #'cape-dict))))
+  (setq tab-always-indent 'complete))
 
-(use-package orderless
-  :straight t
-  :config
-  (setq completion-styles '(substring orderless basic)
-	orderless-component-separator 'orderless-escapable-split-on-space
-	read-file-name-completion-ignore-case t
-	read-buffer-completion-ignore-case t
-	completion-ignore-case t))
-
-(use-package ellama
-  :straight t)
-
-;; Utilities
+;; Ibuffer
 (bind-key "C-x C-b" #'ibuffer)
 
+;; Documentation
 (use-package eldoc
   :ensure nil
   :config
-  (setq eldoc-display-functions 'eldoc-display-in-echo-area
-        eldoc-echo-area-prefer-doc-buffer nil))
+  (global-eldoc-mode t))
 
-(use-package iedit
-  :straight t
-  :config
-  (bind-key "C-:" #'iedit-mode))
-
-(use-package multiple-cursors
-  :straight t
-  :config
-  (bind-key "C->" #'mc/mark-next-like-this)
-  (bind-key "C-<" #'mc/mark-previous-like-this)
-  (bind-key "C-c C-<" #'mc/mark-all-like-this))
-
-(use-package vertico
-  :straight t
-  :config
-  (setq vertico-resize nil
-	vertico-count 10
-	vertico-count-format nil)
-  (vertico-mode))
-
-(use-package consult
-  :straight t
-  :config
-  (setq consult-preview-key nil)
-  (defun my/consult-line ()
-    "Consult line with live preview"
-    (interactive)
-    (let ((consult-preview-key 'any)
-          (mini-frame-resize 'grow-only)) ;; !! Important
-      (consult-line)))
-
-  (defun my/consult-goto-line ()
-    "Consult goto line with live preview"
-    (interactive)
-    (let ((consult-preview-key 'any))
-      (consult-goto-line)))
-
-  (bind-key "C-x C-r" #'consult-recent-file)
-  (bind-key "C-x h"   #'consult-outline)
-  (bind-key "C-x b"   #'consult-buffer)
-  (bind-key "C-c h"   #'consult-history)
-  (bind-key "C-s"     #'my/consult-line)
-  (bind-key "M-g g"   #'my/consult-goto-line)
-  (bind-key "M-g M-g" #'my/consult-goto-line))
-
-(use-package marginalia
-  :straight t
-  :config
-  (setq-default marginalia--ellipsis "…"    ; Nicer ellipsis
-		marginalia-align 'right     ; right alignment
-		marginalia-align-offset -1) ; one space on the right
-  (marginalia-mode))
-
+;; Search keybindings
 (use-package which-key
   :ensure nil
-  :config
+  :config  
   (which-key-mode t))
-
-(use-package magit
-  :straight t
-  :config
-  (bind-key "C-x g g" #'magit-status))
-
-(use-package vterm
-  :straight t)
-
-(use-package vterm-toggle
-  :straight t
-  :config
-  (setq vterm-toggle-fullscreen-p nil
-	vterm-toggle-cd-auto-create-buffer t)
-
-  (add-to-list 'display-buffer-alist
-             '((lambda (bufname _) (equal bufname vterm-buffer-name))
-               (display-buffer-reuse-window display-buffer-in-direction)
-               (direction . bottom)
-               (dedicated . t)
-               (reusable-frames . visible)
-               (window-height . 0.3)))
-  (bind-key "C-x C-t" #'vterm-toggle))
-
-(use-package agent-shell
-  :straight t
-  :bind (("C-c a s" . agent-shell)
-         ("C-c a c" . agent-shell-send-context))
-  :config
-  (setq agent-shell-opencode-acp-command '("opencode" "acp")))
 
 ;; Functions
 (defun move-line (n)
@@ -447,127 +407,46 @@
 
 (bind-key "C-o" #'lean/open-file-current-window)
 
-
-(defun modus-themes-terminal-transparency ()
-  "TODO: docstring."
-  (unless (display-graphic-p)
-    (set-face-background 'default "unsepecific-bg")
-    (set-face-background 'line-number "unsepecific-bg")
-    (set-face-background 'fringe "unsepecific-bg")))
-
-(use-package modus-themes
-  :straight t
-  :config
-  (use-package lean-themes
-    :straight (:type git :host github :repo "unixside/lean-themes")
-    :config
-    (setq lean-themes-to-toggle '(rose-pine-dawn rose-pine))
-    (load-theme 'rose-pine-dawn :no-confirm)
-    (bind-key "C-x t t" #'lean-themes-toggle)))
-
-(use-package lean-modeline
-  :straight (:type git :host github :repo "unixside/lean-modeline" :branch "dev")
-  :config
-  (setq lean-modeline-prefix-function 'lean/bespoke-ui-prefix
-        lean-modeline-icon-scale-factor 1.1
-        lean-modeline-text-scale-factor 1.1)
-  (lean-modeline-mode t))
-
-(use-package owr-faces
-  :straight (:type git :host github :repo "unixside/owr-faces")
-  :config
-  (setq owr-faces-face-attrs-preferences
-        `((default :family "Aporetic Sans Mono" :weight light :height 160)
-		  (bold :weight bold)
-		  (line-number :slant italic)
-		  (line-number-current-line :slant italic)
-		  (font-lock-keyword-face :weight regular :slant italic)
-		  (font-lock-constant-face :slant italic)
-		  (font-lock-function-name-face :weight regular :slant italic)
-		  (font-lock-function-call-face :weight regular :slant italic)
-		  (font-lock-variable-name-face :weight regular)
-		  (font-lock-doc-face  :slant italic)
-		  (font-lock-comment-face  :slant italic)
-		  (font-lock-type-face :weight regular)
-		  (font-lock-builtin-face :weight regular)
-          (header-line :inherit nil)
-          (org-document-title :family "Roboto" :weight bold :height 2.2)
-          (org-document-info :family "Roboto" :slant italic)
-          (org-document-info-keyword :family "Aporetic Sans Mono")
-          (org-meta-line :family "Aporetic Sans Mono")
-          (org-italic :family "Roboto Mono")
-          (org-verbatim :family "Roboto Mono" :weight regular)
-          (org-block :family "Roboto Mono" :weight regular)
-          (org-level-1 :family "Roboto Slab" :weight bold :height 2.0)
-          (org-level-2 :family "Roboto Slab" :weight bold :height 1.8)
-          (org-level-3 :family "Roboto Slab" :weight bold :height 1.65)
-          (org-level-4 :family "Roboto Slab" :weight bold :height 1.5)
-          (org-level-5 :family "Roboto Slab" :weight bold :height 1.2)
-          (org-level-6 :family "Roboto Slab" :weight bold :height 1.1)
-          (org-level-7 :family "Roboto Slab" :weight bold :height 1.1)
-          (org-level-8 :family "Roboto Slab" :weight bold :height 1.1)
-          (variable-pitch :family "Roboto" :height 1.1 :weight light)
-          (fixed-pitch :family "Aporetic Sans Mono")
-          ,@(mapcar
-             (lambda (face)
-               (let ((name (intern (format "rainbow-delimiters-%s-face"
-                                           (symbol-name face)))))
-                 `(,name :weight regular)))
-             '(depth-1 depth-2 depth-3 depth-4 depth-5 depth-6 depth-7
-                       depth-8 depth-9 unmatched mismatched))))
-  
-  (add-hook 'owr-faces-functions-hook 'lean/thin-mode-line)
-  (add-hook 'owr-faces-functions-hook 'modus-themes-terminal-transparency)
-  (owr-faces-mode t))
-
-;; Packages for Org
-(use-package accent
-  :straight t
-  :config
-  (bind-key "C-x C-a" #'accent-menu))
-
-(use-package olivetti
-  :straight t
-  :config
-  (setq olivetti-body-width 100))
-
-(use-package org-superstar
-  :straight t
-  :config
-  (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
-
+;;; Org Mode
 (use-package org
   :ensure nil
   :custom
   (org-image-actual-width 500)
-  (org-indent-mode t)
+  :config
+  (setq org-hide-leading-stars t
+        org-hide-emphasis-markers t
+        org-yank-image-save-method "./img/")
+
+  (defun org-mode-insert-src-block ()
+    "Insert a temaplate src"
+    (interactive)
+    (org-insert-block-template "src"))
+
+  (bind-key "C-c i s" #'org-mode-insert-src-block)
+  (bind-key "C-c i p" #'yank-media)
+  (advice-add 'yank-media :after
+              (lambda (&rest _)
+                (org-link-preview-region
+                 (line-beginning-position)
+                 (line-end-position))))
   :hook
+  (org-mode . org-indent-mode)
   (org-mode . visual-line-mode)
   (org-mode . variable-pitch-mode)
-  (org-mode . (lambda () (org-superstar-mode 1))))
+  (org-mode . flyspell-mode))
 
-(use-package denote
-  :straight t
+;; My own sustem for write notes
+(use-package own-notes
+  :load-path (lambda () (expand-file-name "~/Repos/own-notes"))
   :config
-  (setq denote-directory (expand-file-name "~/Dropbox/Org/denote/")
-        denote-known-keywords '("ajedrez" "emacs" "desktop")
-        denote-file-type 'org
-        denote-prompts '(subdirectory title)
-        denote-file-name-components-order '(indentifier))
-  
-  (bind-key "M-n n" #'denote)
-  (bind-key "M-n o" #'denote-open-or-create)
-  (bind-key "M-n s" #'denote-subdirectory)
-  (bind-key "M-n l" #'denote-link))
+  (setq own-notes-directory "~/Dropbox/Org/Notas")
+  (bind-key "M-n n" 'own-notes)
+  (bind-key "M-n s" 'own-notes-subdirectory)
+  (bind-key "M-n l" 'own-notes-add-link))
 
-;; Chess
-(use-package chess
-  :straight t)
-
+;; Custom mode for pgn files.
 (use-package pgna-mode
-  :load-path (lambda ()
-               (expand-file-name "~/Repos/pgna-mode")))
+  :load-path (lambda () (expand-file-name "~/Repos/pgna-mode")))
 
 (provide 'init)
 ;;; init.el ends here
-
