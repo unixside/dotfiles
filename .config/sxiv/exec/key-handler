@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+while read file
+do
+    fullpath=$(readlink -fn "$file")
+    mimetype=image/${file##*.}
+    case "$1" in
+        "C-d")
+            mv "$fullpath" ~/.trash/ ;;
+        "C-c")            
+            wl-copy < "$fullpath" ;;
+        "C-r")
+            magick "$fullpath" -rotate 90 "$fullpath" ;;
+        "C-w")
+            awww img "$fullpath" -t any -n default ;;
+    esac
+done

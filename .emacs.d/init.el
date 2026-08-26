@@ -1,5 +1,6 @@
-;;; init.el --- My personal config for GNU/Emacs  -*- lexical-binding: t -*- 
+;;; init.el --- My personal config for GNU/Emacs  -*- lexical-binding: t -*-
 ;;; Commentary:
+
 ;;; Code:
 
 ;;; Startup
@@ -11,7 +12,7 @@
 (setq-default inhibit-startup-message t)
 
 ;; Disable initial echo message
-(setq-default inhibit-startup-echo-area-message t)    
+(setq-default inhibit-startup-echo-area-message t)
 
 ;; Set text mode as inital mode
 (setq-default initial-major-mode 'text-mode)
@@ -72,6 +73,9 @@
 ;; Disable backup files
 (setq make-backup-files nil)
 
+;; Enable intuitive navigation betwen windows
+;; (windmove-default-keybindings)
+
 ;; Dictionary
 (use-package ispell
   :ensure nil
@@ -113,13 +117,15 @@
 				              (height     . 30)
 				              (left-fringe . 0)
 				              (right-fringe . 0)
-				              (internal-border-width . 2)
+				              (internal-border-width . 3)
 				              (vertical-scroll-bars . nil)
-                              (undecorated t))
+                              (undecorated . t)
+                              (alpha-background . 1.0)
+                              (font . "Terminus (TTF)"))
 	    initial-frame-alist default-frame-alist
         frame-resize-pixelwise t
         frame-inhibit-implied-resize t)
-  (setq-default window-divider-default-right-width 1
+  (setq-default window-divider-default-right-width 24
     	        window-divider-default-places 'right-only
     	        left-margin-width 0
     	        right-margin-width 0
@@ -138,6 +144,9 @@
 ;; Disable hightlight to cursor current line
 (global-hl-line-mode -1)
 
+;; Disable Tab Bar
+(tab-bar-mode -1)
+
 ;; Line Numbers
 (use-package display-line-numbers
   :ensure nil
@@ -147,7 +156,18 @@
   (prog-mode . display-line-numbers-mode))
 
 ;; Mode line
-;; TODO: Write a custom format for mode-line
+;; (use-package nerd-icons
+;;   :vc (:url "https://github.com/emacsmirror/nerd-icons" :rev :newest))
+
+;; (use-package lean-modeline
+;;   :load-path (lambda () (expand-file-name "~/Repos/lean-modeline/"))
+;;   :config
+;;   (setq lean-modeline-prefix-function 'lean/nerd-icon-ui-prefix       
+;;         lean-modeline-prefix-padding 5.0
+;;         lean-modeline-text-scale-factor 1.0
+;;         lean-modeline-icon-scale-factor 1.5)
+;;   (lean-modeline-mode t)
+;;   (lean/thin-mode-line))
 
 (defun lean-background-transparency (&optional confirm)
   "Enable transparency when is terminal mode or CONFIRM is t."
@@ -164,32 +184,43 @@
 
 ;; Theme
 (require-theme 'modus-themes)
-(setq modus-themes-to-toggle '(modus-operandi modus-vivendi))
-(load-theme 'modus-operandi-tinted :no-confirm)
-(bind-key "C-x t t" #'modus-themes-toggle)
+;; (setq modus-themes-to-toggle (if (display-graphic-p)
+;;                                  '(modus-vivendi modus-operandi)
+;;                                nil)
+;;       modus-vivendi-palette-overrides modus-themes-preset-overrides-faint
+;;       modus-operandi-palette-overrides modus-themes-preset-overrides-intense)
+;; (load-theme 'modus-vivendi :no-confirm)
+;; (bind-key "C-x t t" #'modus-themes-toggle)
 
-;; Rewrite faces onfly
+(use-package lean-themes
+  :load-path (lambda () (expand-file-name "~/Repos/lean-themes/"))
+  :config
+  (setq lean-themes-to-toggle '(tokyonight-night rose-pine))
+  (load-theme 'tokyonight-night :no-confirm)
+  (bind-key "C-x t t" #'lean-themes-toggle))
+
+;; Rewrite faces on the fly
 (use-package owr-faces
   :load-path (lambda () (expand-file-name "~/Repos/owr-faces/"))
   :config
   (setq owr-faces-face-attrs-preferences
-        `((default :family "Iosevka Nerd Font Mono" :weight light :height 150)
+        `((default :height 150)
 		  (bold :weight bold)
 		  (line-number :slant italic)
 		  (line-number-current-line :slant italic)
-		  (font-lock-keyword-face  :weight regular :slant italic)
+		  (font-lock-keyword-face  :weight bold :slant italic)
 		  (font-lock-constant-face :slant italic)
-		  (font-lock-function-name-face :weight regular :slant italic)
-		  (font-lock-function-call-face :weight regular :slant italic)
-		  (font-lock-variable-name-face :weight regular)
+		  (font-lock-function-name-face :weight bold :slant italic)
+		  (font-lock-function-call-face :weight bold :slant italic)
+		  (font-lock-variable-name-face :weight bold)
 		  (font-lock-doc-face  :slant italic)
 		  (font-lock-comment-face  :slant italic)
 		  (font-lock-type-face :weight regular)
 		  (font-lock-builtin-face :weight regular)
           (header-line :inherit nil)
-          (mode-line :box nil)
-          (mode-line-active :box nil)
-          (mode-line-inactive :box nil)
+          (mode-line :box nil :underline nil)
+          (mode-line-active :box nil :underline nil)
+          (mode-line-inactive :box nil :underline nil)
           (org-document-title :family "Latin Modern Sans"
                               :weight bold :height 2.2)
           (org-document-info :family "Iosevka Nerd Font Mono" :slant italic)
@@ -217,7 +248,8 @@
                                            (symbol-name face)))))
                  `(,name :weight regular)))
              '(depth-1 depth-2 depth-3 depth-4 depth-5 depth-6 depth-7
-                       depth-8 depth-9 unmatched mismatched))))
+                       depth-8 depth-9 unmatched mismatched))
+          ))
   
   ;; (add-hook 'owr-faces-functions-hook 'lean/thin-mode-line)
   (add-hook 'owr-faces-functions-hook 'lean-background-transparency)
@@ -268,7 +300,7 @@
     tsx-ts-mode
     lua-ts-mode
     c-ts-mode
-    qml-ts-mode) . eglot-ensure)  
+    qml-ts-mode) . eglot-ensure)
   :config
   (add-to-list
    'eglot-server-programs
@@ -281,7 +313,7 @@
 ;; Check erros on the fly
 (use-package flymake
   :ensure nil
-  :config  
+  :config
   (setq flymake-indicator-type 'margins
         flymake-margin-indicator-position 'right-margin))
 
@@ -339,7 +371,9 @@
   (setq completion-category-overrides
         '((file . ((styles partial-completion)))))
 
-  (setq tab-always-indent 'complete))
+  (setq tab-always-indent 'complete)
+  
+  (define-key minibuffer-local-completion-map (kbd "SPC") 'self-insert-command))
 
 ;; Ibuffer
 (bind-key "C-x C-b" #'ibuffer)
@@ -353,7 +387,7 @@
 ;; Search keybindings
 (use-package which-key
   :ensure nil
-  :config  
+  :config
   (which-key-mode t))
 
 ;; Functions
@@ -413,14 +447,14 @@
   :custom
   (org-image-actual-width 500)
   :config
-  (setq org-hide-leading-stars t
+  (setq org-hide-leading-stars nil
         org-hide-emphasis-markers t
         org-yank-image-save-method "./img/")
 
   (defun org-mode-insert-src-block ()
     "Insert a temaplate src"
     (interactive)
-    (org-insert-block-template "src"))
+    (org-insert-structure-template "src"))
 
   (bind-key "C-c i s" #'org-mode-insert-src-block)
   (bind-key "C-c i p" #'yank-media)

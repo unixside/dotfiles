@@ -30,6 +30,12 @@ zstyle ':completion:*' menu no
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
+# Evita que Zsh expanda los aliases antes de que fzf-tab pueda procesarlos
+setopt COMPLETE_ALIASES
+
+# Configura fzf-tab para mostrar una vista previa del comando real al completarlo
+zstyle ':completion:*:aliases' fzf-preview 'echo $word'
+
 ### new executables
 zstyle ':completion:*' rehash true
 
@@ -49,18 +55,26 @@ export EDITOR='emacs -nw'
 export BAT_THEME=ansi
 
 # Aliases
-alias l='eza '
+alias ls='eza '
 alias la='eza -la --group-directories-first --icons=always '
 alias lt='eza --tree '
 
 alias cat='bat'
 alias top='htop'
+alias e='wezterm cli set-tab-title "GNU/Emacs" && emacs -nw'
+alias h='wezterm cli set-tab-title "Sys Monitor" && htop'
 
 # Create an alias to interact with the repository
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME '
 
+# Load colors
+autoload -U colors && colors
+
 # Prompt
-eval "$(starship init zsh)"
+PROMPT=$'%F{red}%B[%F{yellow}%{\e[3m%}%n%F{green}@%F{blue}%m%{\e[0m%}%F{red}]%F{cyan}:%F{magenta}%~ %F{white}$ %b%f'
+
+# Prompt
+# eval "$(starship init zsh)"
 
 # Shell integrations
 eval "$(fzf --zsh)"
