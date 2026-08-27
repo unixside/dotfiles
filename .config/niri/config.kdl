@@ -8,7 +8,7 @@ input {
             // For more information, see xkeyboard-config(7).
 
             // For example:
-            // layout "us,ru"
+            layout "us"
             // options "grp:win_space_toggle,compose:ralt,ctrl:nocaps"
 
             // If this section is empty, niri will fetch xkb settings
@@ -38,11 +38,11 @@ input {
     }
 
     mouse {
-        // off
+        //off
         // natural-scroll
-        // accel-speed 0.2
-        // accel-profile "flat"
-        // scroll-method "no-scroll"
+        accel-speed 0.2
+        accel-profile "flat"
+        scroll-method "no-scroll"
     }
 
     trackpoint {
@@ -75,6 +75,8 @@ output "DP-1" {
 
     layout {
         gaps 15
+        center-focused-column "always"
+        default-column-width { proportion 0.6667; }
 
         focus-ring {
             off
@@ -82,15 +84,18 @@ output "DP-1" {
 
         border {
             off
+            width 1
+            active-color "#f1f1f1"
+            inactive-color "#131313"
         }
 
         shadow {
             on
-            softness 30
-            spread 5
+            softness 50
+            spread 15
             offset x=0 y=5
-            draw-behind-window true
-            color "#000000"
+            // draw-behind-window true
+            color "#000000dd"
         }
     }
 }
@@ -101,7 +106,8 @@ output "HDMI-A-1" {
     position x=0 y=1440
 
     layout {
-        gaps 0
+        gaps 15
+        center-focused-column "always"
         always-center-single-column
         default-column-width { proportion 0.6667; }
 
@@ -110,21 +116,30 @@ output "HDMI-A-1" {
         }
 
         border {
-            on
+            off
+            width 1
             active-color "#f1f1f1"
             inactive-color "#131313"
         }
 
         shadow {
-            off
+            on
+            softness 50
+            spread 10
+            offset x=0 y=5
+            // draw-behind-window true
+            color "#000000"
         }
-    }    
+    }
 }
-
-spawn-at-startup "dbus-update-activation-environment" "--systemd" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP=niri"
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
+
+spawn-sh-at-startup "dbus-update-activation-environment --all"
+spawn-sh-at-startup "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+
+spawn-sh-at-startup "wl-paste --watch cliphist store"
 
 hotkey-overlay {
     // Uncomment this line to disable the "Important Hotkeys" pop-up at startup.
@@ -149,6 +164,7 @@ screenshot-path "~/Imágenes/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 // Animation settings.
 // The wiki explains how to configure individual animations:
 // https://yalter.github.io/niri/Configuration:-Animations
+
 animations {
     // Uncomment to turn off all animations.
     // off
@@ -163,12 +179,43 @@ animations {
 
 // Work around WezTerm's initial configure bug
 // by setting an empty default-column-width.
+
+blur {
+    // off
+    passes 2
+    offset 1.5
+    noise 0.0
+    saturation 2
+}
+
 window-rule {
-    // This regular expression is intentionally made as specific as possible,
-    // since this is the default config, and we want no false positives.
-    // You can get away with just app-id="wezterm" if you want.
-    match app-id=r#"^org\.wezfurlong\.wezterm$"#
-    default-column-width {}
+    match app-id=r#"^org.wezfurlong.wezterm$"#
+    background-effect {
+        blur true
+        xray false
+    }
+    draw-border-with-background false
+}
+
+window-rule {
+    match app-id="Sxiv"
+    open-floating true
+}
+
+layer-rule {
+    match namespace="rofi"
+    background-effect {
+        blur true
+        xray false
+        noise 0.005
+        saturation 2
+    }
+
+    shadow {
+        on
+    }
+
+    geometry-corner-radius 20
 }
 
 // Open the Firefox picture-in-picture player as floating by default.
@@ -195,9 +242,8 @@ window-rule {
 // Example: enable rounded corners for all windows.
 // (This example rule is commented out with a "/-" in front.)
 window-rule {
-    geometry-corner-radius 10
+    geometry-corner-radius 15
     clip-to-geometry true
-    draw-border-with-background false
 }
 
 window-rule {
@@ -214,8 +260,8 @@ window-rule {
     match app-id=r#"emacs"#
     background-effect {
         blur true
-        noise 0.05
-        saturation 1
+        noise 0.005
+        saturation 2
     }    
 }
 
@@ -274,7 +320,10 @@ binds {
     Mod+E hotkey-overlay-title="Run my prefer text editor"  { spawn-sh "emacs"; }
         // Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
     Mod+Shift+B hotkey-overlay-title="Reload Waybar Configuration" { spawn-sh "killall -SIGUSR2 waybar"; }
-    Mod+Shift+C { spawn-sh "swaync-client -t -sw"; }
+
+    Mod+Shift+W { spawn-sh "sxiv -t $(xdg-user-dir PICTURES)/Wallpapers/*" ;}
+
+    Mod+Shift+V { spawn-sh "cliphist list | rofi -dmenu | cliphist decode | wl-copy" ;}
 
     // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
     // Note: the entire command goes as a single argument. It's passed verbatim to `sh -c`.
@@ -494,7 +543,7 @@ binds {
 
     // Move the focused window between the floating and the tiling layout.
     Mod+V       { toggle-window-floating; }
-    Mod+Shift+V { switch-focus-between-floating-and-tiling; }
+   //  Mod+Shift+V { switch-focus-between-floating-and-tiling; }
 
     // Toggle tabbed column display mode.
     // Windows in this column will appear as vertical tabs,
@@ -553,3 +602,7 @@ gestures {
 recent-windows {
     off
 }
+
+
+
+

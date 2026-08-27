@@ -3,46 +3,59 @@
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 export WAYLAND_DISPLAY=wayland-1
 
+LOCKWALLPAPER=/tmp/lockwallpaper.png
+
 function randomWallpaper {
     echo "$(find ~/*/Wallpapers/* -type f | shuf -n 1)"
+}
+
+function getLockWallpaer {
+    magick "$1" -scale 10% -blur 0x2.5 -resize 1000% "$LOCKWALLPAPER"
 }
 
 function getWallpaper {
     if ! [ -z $1 ]
     then
-        local WALLPAPER=$(realpath "$1")
+        local wallpaper=$(realpath "$1")
     else    
-        local WALLPAPER=$(randomWallpaper)
+        local wallpaper=$(randomWallpaper)
     fi
-    echo $WALLPAPER
+    echo $wallpaper
 }
 
 function loadWallpaper {
-    local WALLPAPER=$1
-    local NAMESPACE=$2
+    local wallpaper=$1
+    local namespace=$2
 
     local ARGS="-t any"
     local MSG="Load wallpaper: $WALLPAPER"
 
-    if [[ "$NAMESPACE" ]]
+    if [[ "$namespace" ]]
     then
-        ARGS="$ARGS -n $NAMESPACE"
-        MSG="$MSG, namespace: $NAMESPACE"
+        ARGS="$ARGS -n $namespace"
+        MSG="$MSG, namespace: $namespace"
     fi
     
-    if [ -f $WALLPAPER ]
+    if [ -f $wallpaper ]
     then
-        local COMMAND="awww img ${WALLPAPER} ${ARGS}"
+        local COMMAND="awww img ${wallpaper} ${ARGS}"
         $COMMAND
     else
         exit 1
     fi    
 }
 
-WALLPAPER1="$(getWallpaper $1)"
-WALLPAPER2="$(getWallpaper $2)"
+WALLPAPER="$(getWallpaper $1)"
 
-loadWallpaper "$WALLPAPER1" "default" && loadWallpaper "$WALLPAPER2" "overlay"
+getLockWallpaer "$WALLPAPER" &
+
+loadWallpaper "$WALLPAPER" "default" &&
+    echo "Load wallpapper: $WALLPAPER to namespace: default"
+
+wait
+loadWallpaper "$LOCKWALLPAPER" "overlay" &&
+    echo "Load lock wallpapper: $LOCKWALLPAPER to namespace: overlay"
+    
 notify-send -t 3000 "Change Wallpapers"
 
 exit 0
