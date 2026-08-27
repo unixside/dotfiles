@@ -1,9 +1,8 @@
 @import "default"
-@import "./rose-pine-dawn.rasi"
 
 
 * {
-	font: "Iosevka NF 16";
+	font: "Terminus (TTF) 16";
 
 	foreground: #fafafa;
 	background: #000000BB;
@@ -27,7 +26,7 @@
 
 #mainbox {
 	border:  0;
-	padding: 5;
+	padding: 0;
 }
 
 #message {
@@ -42,12 +41,12 @@
 
 #listview {
 	fixed-height:  0;
-    border:        0px solid;
+    border-top:    1px solid;
     border-radius: 0px;
     background-color: transparent;
 	border-color: @bordercolor;
 	spacing:      2px;
-    margin: 15px;
+    margin: 5px;
 	scrollbar:    false;
 	padding:      0px;
 }
@@ -115,7 +114,7 @@
 #inputbar {
 	spacing:    0;
 	text-color: @foreground;
-	padding:    5px;
+	padding:    2px;
     border: 0px;
     border-radius: 10px;
     background-color: #000000aa;
@@ -128,7 +127,7 @@
 
 #entry {
 	spacing:    0;
-	text-color: @cya;
+	text-color: @foreground;
 }
 
 #prompt {
