@@ -1,0 +1,83 @@
+URxvt.font:           xft:Terminus (TTF):size=14:style=Regular
+URxvt.boldFont:       xft:Terminus (TTF):size=14:style=Bold
+URxvt.italicFont:     xft:Terminus (TTF):size=14:style=Italic
+URxvt.boldItalicFont: xft:Terminus (TTF):size=14:style=Bold Italic
+
+! ! ------------------------------------------------------------------------------
+! ! MODUS OPERANDI - URxvt Color Scheme
+! ! ------------------------------------------------------------------------------
+! URxvt.background:   #ffffff
+! URxvt.foreground:   #000000
+! URxvt.cursorColor:  #000000
+
+! ! Black (Normal / Bright)
+! URxvt.color0:       #000000
+! URxvt.color8:       #595959
+
+! ! Red (Normal / Bright)
+! URxvt.color1:       #a60000
+! URxvt.color9:       #ff5f5f
+
+! ! Green (Normal / Bright)
+! URxvt.color2:       #005f00
+! URxvt.color10:      #00d700
+
+! ! Yellow (Normal / Bright)
+! URxvt.color3:       #875f00
+! URxvt.color11:      #ffff00
+
+! ! Blue (Normal / Bright)
+! URxvt.color4:       #000022
+! URxvt.color12:      #5f87ff
+
+! ! Magenta (Normal / Bright)
+! URxvt.color5:       #8700af
+! URxvt.color13:      #ff5fff
+
+! ! Cyan (Normal / Bright)
+! URxvt.color6:       #0087af
+! URxvt.color14:      #00ffff
+
+! ! White (Normal / Bright)
+! URxvt.color7:       #a8a8a8
+! URxvt.color15:      #ffffff
+
+
+! ------------------------------------------------------------------------------
+! MODUS VIVENDI - URxvt Color Scheme
+! ------------------------------------------------------------------------------
+URxvt.background:   #000000
+URxvt.foreground:   #ffffff
+URxvt.cursorColor:  #ffffff
+
+! Black (Normal / Bright)
+URxvt.color0:       #000000
+URxvt.color8:       #595959
+
+! Red (Normal / Bright)
+URxvt.color1:       #a60000
+URxvt.color9:       #ff5f5f
+
+! Green (Normal / Bright)
+URxvt.color2:       #005f00
+URxvt.color10:      #00d700
+
+! Yellow (Normal / Bright)
+URxvt.color3:       #875f00
+URxvt.color11:      #ffff00
+
+! Blue (Normal / Bright)
+URxvt.color4:       #000022
+URxvt.color12:      #5f87ff
+
+! Magenta (Normal / Bright)
+URxvt.color5:       #8700af
+URxvt.color13:      #ff5fff
+
+! Cyan (Normal / Bright)
+URxvt.color6:       #0087af
+URxvt.color14:      #00ffff
+
+! White (Normal / Bright)
+URxvt.color7:       #a8a8a8
+URxvt.color15:      #ffffff

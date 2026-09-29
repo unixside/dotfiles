@@ -64,27 +64,34 @@ input {
     // focus-follows-mouse max-scroll-amount="0%"
 }
 
-output "DP-1" {
+cursor {
+    xcursor-theme "Oxygen White"
+    xcursor-size 24
+}
+
+output "HDMI-A-1" {
     // Uncomment this line to disable this output.
     // off
     
     mode "2560x1440@74.97"
     scale 1
     transform "normal"
-    position x=0 y=0
+    position x=1920 y=0
 
     layout {
         gaps 15
-        center-focused-column "always"
+        // center-focused-column "never"
+        always-center-single-column
         default-column-width { proportion 0.6667; }
+        background-color "transparent"
 
         focus-ring {
             off
         }
 
         border {
-            off
-            width 1
+            on
+            width 0
             active-color "#f1f1f1"
             inactive-color "#131313"
         }
@@ -100,16 +107,18 @@ output "DP-1" {
     }
 }
 
-output "HDMI-A-1" {
+output "DP-1" {
     mode "1920x1080@60.000"
     scale 1
-    position x=0 y=1440
+    position x=0 y=0
+    transform "normal"
 
     layout {
-        gaps 15
-        center-focused-column "always"
+        gaps 10
+        center-focused-column "never"
         always-center-single-column
-        default-column-width { proportion 0.6667; }
+        default-column-width { proportion 1.0; }
+        background-color "transparent"
 
         focus-ring {
             off            
@@ -117,7 +126,7 @@ output "HDMI-A-1" {
 
         border {
             off
-            width 1
+            width 3
             active-color "#f1f1f1"
             inactive-color "#131313"
         }
@@ -136,10 +145,9 @@ output "HDMI-A-1" {
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
 
-spawn-sh-at-startup "dbus-update-activation-environment --all"
-spawn-sh-at-startup "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
-
-spawn-sh-at-startup "wl-paste --watch cliphist store"
+// spawn-sh-at-startup "dbus-update-activation-environment --all"
+spawn-sh-at-startup "$HOME/.local/bin/setWallpaper"
+spawn-at-startup "dunst"
 
 hotkey-overlay {
     // Uncomment this line to disable the "Important Hotkeys" pop-up at startup.
@@ -156,7 +164,7 @@ prefer-no-csd
 // You can change the path where screenshots are saved.
 // A ~ at the front will be expanded to the home directory.
 // The path is formatted with strftime(3) to give you the screenshot date and time.
-screenshot-path "~/Imágenes/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
 // You can also set this to null to disable saving screenshots to disk.
 // screenshot-path null
@@ -180,36 +188,37 @@ animations {
 // Work around WezTerm's initial configure bug
 // by setting an empty default-column-width.
 
-blur {
-    // off
-    passes 2
-    offset 1.5
-    noise 0.0
-    saturation 2
-}
+// blur {
+//     // off
+//     passes 2
+//     offset 1.5
+//     noise 0.0
+//     saturation 2
+// }
 
 window-rule {
     match app-id=r#"^org.wezfurlong.wezterm$"#
-    background-effect {
-        blur true
-        xray false
-    }
+    // background-effect {
+    //     blur true
+    //     xray false
+    // }
     draw-border-with-background false
 }
 
 window-rule {
-    match app-id="Sxiv"
+    match app-id="Nsxiv"
     open-floating true
 }
 
 layer-rule {
     match namespace="rofi"
-    background-effect {
-        blur true
-        xray false
-        noise 0.005
-        saturation 2
-    }
+
+    // background-effect {
+    //     blur true
+    //     xray false
+    //     noise 0.005
+    //     saturation 2
+    // }
 
     shadow {
         on
@@ -248,21 +257,25 @@ window-rule {
 
 window-rule {
     match app-id=r#"com.mitchellh.ghostty"#
-    background-effect {
-        blur true
-        noise 0.05
-        saturation 1
-    }
+
+    // background-effect {
+    //     blur true
+    //     noise 0.05
+    //     saturation 1
+    // }
+    
     draw-border-with-background false
 }
 
 window-rule {
     match app-id=r#"emacs"#
-    background-effect {
-        blur true
-        noise 0.005
-        saturation 2
-    }    
+
+    // background-effect {
+    //     blur true
+    //     noise 0.005
+    //     saturation 2
+    // }
+    
 }
 
 window-rule {
@@ -277,11 +290,12 @@ window-rule {
 
 layer-rule {
     match namespace="waybar"
-    background-effect {
-        blur true
-        noise 0.05
-        saturation 1
-    }
+
+    // background-effect {
+    //     blur true
+    //     noise 0.05
+    //     saturation 1
+    // }
 
     shadow {
         on
@@ -315,15 +329,13 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
-    Mod+T hotkey-overlay-title="Open a Terminal: Wezterm" { spawn "wezterm"; }
-    Mod+D hotkey-overlay-title="Run an Application: rofi" { spawn-sh "rofi -show drun -show-icons"; }
+    Mod+T hotkey-overlay-title="Open a Terminal: Foot" { spawn "foot"; }
+    Mod+D hotkey-overlay-title="Run an Application: Fuzzel" { spawn-sh "fuzzel"; }
     Mod+E hotkey-overlay-title="Run my prefer text editor"  { spawn-sh "emacs"; }
         // Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
     Mod+Shift+B hotkey-overlay-title="Reload Waybar Configuration" { spawn-sh "killall -SIGUSR2 waybar"; }
 
     Mod+Shift+W { spawn-sh "sxiv -t $(xdg-user-dir PICTURES)/Wallpapers/*" ;}
-
-    Mod+Shift+V { spawn-sh "cliphist list | rofi -dmenu | cliphist decode | wl-copy" ;}
 
     // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
     // Note: the entire command goes as a single argument. It's passed verbatim to `sh -c`.
@@ -334,23 +346,22 @@ binds {
     // The allow-when-locked=true property makes them work even when the session is locked.
     // Using spawn-sh allows to pass multiple arguments together with the command.
     // "-l 1.0" limits the volume to 100%.
-    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
-    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
-    XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
-    XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
+    Mod+F12 { spawn-sh "/usr/bin/sndioctl output.level=+0.01"; }
+    Mod+F11 { spawn-sh "/usr/bin/sndioctl output.level=-0.01"; }
+    Mod+F10 { spawn-sh "/usr/bin/sndioctl output.mute=!"; }
 
     // Example media keys mapping using playerctl.
     // This will work with any MPRIS-enabled media player.
-    XF86AudioPlay        allow-when-locked=true { spawn-sh "playerctl play-pause"; }
-    XF86AudioStop        allow-when-locked=true { spawn-sh "playerctl stop"; }
-    XF86AudioPrev        allow-when-locked=true { spawn-sh "playerctl previous"; }
-    XF86AudioNext        allow-when-locked=true { spawn-sh "playerctl next"; }
+    Mod+F8 { spawn-sh "playerctl play-pause || mpc toggle"; }
+    Mod+F6 { spawn-sh "playerctl stop || mpc stop"; }
+    Mod+F9 { spawn-sh "playerctl next || mpc next"; }
+    Mod+F7 { spawn-sh "playerctl prev || mpc prev"; }
 
     // Example brightness key mappings for brightnessctl.
     // You can use regular spawn with multiple arguments too (to avoid going through "sh"),
     // but you need to manually put each argument in separate "" quotes.
-    XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+10%"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
+    // XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+10%"; }
+    // XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
 
     // Open/close the Overview: a zoomed-out view of workspaces and windows.
     // You can also move the mouse into the top-left hot corner,
@@ -558,8 +569,8 @@ binds {
     // Mod+Space       { switch-layout "next"; }
     // Mod+Shift+Space { switch-layout "prev"; }
 
-    Print { screenshot; }
-    Ctrl+Print { screenshot-screen; }
+    Print { spawn-sh "grim"; }
+    Ctrl+Print { spawn-sh "grim -o $(niri msg -j focused-output| jq -r .name)"; }
     Alt+Print { screenshot-window; }
 
     // Applications such as remote-desktop clients and software KVM switches may
@@ -593,6 +604,16 @@ layer-rule {
     }
 }
 
+layer-rule {
+    match namespace="^wallpapers$"
+    place-within-backdrop false
+}
+
+layer-rule {
+    match namespace="^overview-wallpapers$"
+    place-within-backdrop true
+}
+
 gestures {
         hot-corners {
                 off
@@ -603,6 +624,6 @@ recent-windows {
     off
 }
 
-
-
-
+debug {
+    render-drm-device "/dev/dri/renderD128"
+}

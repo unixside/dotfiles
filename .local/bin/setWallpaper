@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 
-export XDG_RUNTIME_DIR=/run/user/$(id -u)
-export WAYLAND_DISPLAY=wayland-1
-
+FOLDERWALLPAPERS=$(xdg-user-dir PICTURES)/Wallpapers
 LOCKWALLPAPER=/tmp/lockwallpaper.png
 
+echo $FOLDERWALLPAPERS
+
 function randomWallpaper {
-    echo "$(find ~/*/Wallpapers/* -type f | shuf -n 1)"
+    # echo "$(find ~/*/Wallpapers/* -type f | shuf -n 1)"
+    echo $(perl -e '@f=</home/lean/Pictures/Wallpapers/*>; if(@f){ chomp($r = $f[rand @f]); print "$r\n" }')
 }
 
 function getLockWallpaer {
-    magick "$1" -scale 10% -blur 0x2.5 -resize 1000% "$LOCKWALLPAPER"
+    convert "$1" -scale 10% -blur 0x2.5 -resize 1000% "$LOCKWALLPAPER"
 }
 
 function getWallpaper {
@@ -23,39 +24,15 @@ function getWallpaper {
     echo $wallpaper
 }
 
-function loadWallpaper {
-    local wallpaper=$1
-    local namespace=$2
-
-    local ARGS="-t any"
-    local MSG="Load wallpaper: $WALLPAPER"
-
-    if [[ "$namespace" ]]
-    then
-        ARGS="$ARGS -n $namespace"
-        MSG="$MSG, namespace: $namespace"
-    fi
-    
-    if [ -f $wallpaper ]
-    then
-        local COMMAND="awww img ${wallpaper} ${ARGS}"
-        $COMMAND
-    else
-        exit 1
-    fi    
-}
-
 WALLPAPER="$(getWallpaper $1)"
 
-getLockWallpaer "$WALLPAPER" &
+PID=$(pgrep -x swaybg)
 
-loadWallpaper "$WALLPAPER" "default" &&
-    echo "Load wallpapper: $WALLPAPER to namespace: default"
+swaybg -m fill -i "$WALLPAPER" &
 
-wait
-loadWallpaper "$LOCKWALLPAPER" "overlay" &&
-    echo "Load lock wallpapper: $LOCKWALLPAPER to namespace: overlay"
-    
-notify-send -t 3000 "Change Wallpapers"
+if [ $PID ]; then
+    sleep 0.5
+    kill $PID
+fi
 
 exit 0

@@ -1,7 +1,7 @@
 ;;; init.el --- My personal config for GNU/Emacs  -*- lexical-binding: t -*-
 ;;; Commentary:
 
-;;; Code:
+;;; Code: 
 
 ;;; Startup
 
@@ -80,14 +80,14 @@
 (use-package ispell
   :ensure nil
   :config
-  (setq ispell-program-name "hunspell")
+  (setq ispell-program-name "aspell")
 
   ;; Force Hunspell to find defualt path of Linux
-  (setq ispell-hunspell-dict-paths-alist
-        '(("es_AR" "/usr/share/hunspell/es_AR.aff")))
+  (setq ispell-aspell-dictionary-alist
+        '(("es_AR" "/usr/local/lib/ispell/spanish.aff")))
 
   ;; Set default dictionary with specific name
-  (setq ispell-dictionary "es_AR"))
+  (setq ispell-dictionary "spanish"))
 
 ;; Help
 (setq help-window-select t)
@@ -108,29 +108,30 @@
   (bind-key "C-x C-r" #'recentf))
 
 ;;; Interface
-(use-package frame
-  :ensure nil
-  :config
-  (setq default-frame-alist '((min-height . 1)
-				              (min-width  . 1)
-				              (width      . 100)
-				              (height     . 30)
-				              (left-fringe . 0)
-				              (right-fringe . 0)
-				              (internal-border-width . 3)
-				              (vertical-scroll-bars . nil)
-                              (undecorated . t)
-                              (alpha-background . 1.0)
-                              (font . "Terminus (TTF)"))
-	    initial-frame-alist default-frame-alist
-        frame-resize-pixelwise t
-        frame-inhibit-implied-resize t)
-  (setq-default window-divider-default-right-width 24
-    	        window-divider-default-places 'right-only
-    	        left-margin-width 0
-    	        right-margin-width 0
-    	        window-combination-resize nil)
-  (window-divider-mode t))
+(when (display-graphic-p)
+  (use-package frame
+    :ensure nil
+    :config
+    (setq default-frame-alist '((min-height . 1)
+				                (min-width  . 1)
+				                (width      . 100)
+				                (height     . 30)
+				                (left-fringe . 0)
+				                (right-fringe . 0)
+				                (internal-border-width . 24)
+				                (vertical-scroll-bars . nil)
+                                (undecorated . t)
+                                (alpha-background . 1.0))
+	      initial-frame-alist default-frame-alist
+          frame-resize-pixelwise t
+          frame-inhibit-implied-resize t)
+    (setq-default window-divider-default-right-width 20
+    	          window-divider-default-places 'right-only
+    	          left-margin-width 0
+    	          right-margin-width 0
+    	          window-combination-resize nil)
+    (window-divider-mode t))
+  )
 
 ;; Disable Menu bar
 (menu-bar-mode -1)
@@ -147,101 +148,132 @@
 ;; Disable Tab Bar
 (tab-bar-mode -1)
 
-;; Line Numbers
-(use-package display-line-numbers
-  :ensure nil
-  :config
-  (setq display-line-numbers-width 3)
-  :hook
-  (prog-mode . display-line-numbers-mode))
+;; Cusros
+(setq-default cursor-type '(bar . 2))
+(blink-cursor-mode t)
 
-;; Mode line
-;; (use-package nerd-icons
-;;   :vc (:url "https://github.com/emacsmirror/nerd-icons" :rev :newest))
+;; Line Spacing
+(setq-default line-spacing 0.0)
 
-;; (use-package lean-modeline
-;;   :load-path (lambda () (expand-file-name "~/Repos/lean-modeline/"))
-;;   :config
-;;   (setq lean-modeline-prefix-function 'lean/nerd-icon-ui-prefix       
-;;         lean-modeline-prefix-padding 5.0
-;;         lean-modeline-text-scale-factor 1.0
-;;         lean-modeline-icon-scale-factor 1.5)
-;;   (lean-modeline-mode t)
-;;   (lean/thin-mode-line))
+(unless (display-graphic-p)
+  ;; Line Numbers
+  (use-package display-line-numbers
+    :ensure nil
+    :config
+    (setq display-line-numbers-width 3)
+    :hook
+    (prog-mode . display-line-numbers-mode))
 
-(defun lean-background-transparency (&optional confirm)
-  "Enable transparency when is terminal mode or CONFIRM is t."
-  (when (or confirm (not (display-graphic-p)))
-    (set-face-background 'default "unsepecific-bg")
-    (set-face-background 'line-number "unsepecific-bg")
-    (set-face-background 'fringe "unsepecific-bg")))
+  ;; Mode line
+  (require 'svg)
+  (setq buffer-status-indicator-width 7
+        buffer-status-indicator-height 25)
 
-(defun lean-apply-black-background ()
-  "Apply black background for apropieate faces."
-  (set-face-background 'default "black")
-  (set-face-background 'line-number "black")
-  (set-face-background 'fringe "black"))
+  (defun buffer-status-indicator (&optional width height)
+    (let ((color (cond (buffer-read-only    (face-foreground 'success))
+                       ((buffer-modified-p) (face-foreground 'warning))
+                       (t                   (face-foreground 'default))))
+          (width (or width 5))
+          (height (or height 20))
+          (svg (svg-create width height)))
+      (if (display-graphic-p)
+          (progn (svg-rectangle svg 0 0 width height :fill color :stroke color)
+                 (propertize " " 'display (svg-image svg :ascent 'center)))
+        (propertize " " 'face `(:background ,color)))))
+
+  (setq-default mode-line-format
+                '((:eval (buffer-status-indicator
+                          buffer-status-indicator-width
+                          buffer-status-indicator-height))
+                  " "
+                  mode-line-buffer-identification
+                  " "
+                  mode-line-modes
+                  " "
+                  mode-line-format-right-align
+                  vc-mode
+                  "  "
+                  (:eval (propertize (format-mode-line "C%c")))
+                  "  ")))
+
+(when (display-graphic-p)
+  (use-package lean-modeline
+    :load-path (lambda () (expand-file-name "~/Repos/lean-modeline/"))
+    :config
+    (lean-modeline-mode)
+    (lean/thin-mode-line)))
 
 ;; Theme
 (require-theme 'modus-themes)
-;; (setq modus-themes-to-toggle (if (display-graphic-p)
-;;                                  '(modus-vivendi modus-operandi)
-;;                                nil)
-;;       modus-vivendi-palette-overrides modus-themes-preset-overrides-faint
-;;       modus-operandi-palette-overrides modus-themes-preset-overrides-intense)
-;; (load-theme 'modus-vivendi :no-confirm)
-;; (bind-key "C-x t t" #'modus-themes-toggle)
 
-(use-package lean-themes
-  :load-path (lambda () (expand-file-name "~/Repos/lean-themes/"))
-  :config
-  (setq lean-themes-to-toggle '(tokyonight-night rose-pine))
-  (load-theme 'tokyonight-night :no-confirm)
-  (bind-key "C-x t t" #'lean-themes-toggle))
+(defun transparent-background-p ()
+  (< (alist-get 'alpha-background default-frame-alist) 1.0))
+
+(let ((current nil) (alternative nil))
+  (if (and (display-graphic-p)
+           (not (transparent-background-p)))
+      (setq current 'modus-operandi
+            alternative 'modus-vivendi)
+    (setq current 'modus-vivendi
+          alternative 'modus-vivendi-tritanopia))
+  (setq modus-vivendi-palette-overrides modus-themes-preset-overrides-faint
+        modus-operandi-palette-overrides modus-themes-preset-overrides-cooler
+        modus-themes-to-toggle `(,current ,alternative))
+  (load-theme current :no-confirm))
+
+(bind-key "C-x t t" #'modus-themes-toggle)
+
+(defun lean-background-transparency (&optional confirm)
+  "Enable transparency when is terminal mode or CONFIRM is t."
+  (when (or confirm (not (display-graphic-p))
+            (transparent-background-p))
+    (mapc #'(lambda (face) (set-face-background face "unspecified-bg"))       
+          '(default line-number fringe internal-border))))
+
+(set-frame-font "IntoneMono NF")
 
 ;; Rewrite faces on the fly
 (use-package owr-faces
   :load-path (lambda () (expand-file-name "~/Repos/owr-faces/"))
   :config
   (setq owr-faces-face-attrs-preferences
-        `((default :height 150)
+        `((default :weight regular :height 150)
 		  (bold :weight bold)
 		  (line-number :slant italic)
 		  (line-number-current-line :slant italic)
-		  (font-lock-keyword-face  :weight bold :slant italic)
+		  (font-lock-keyword-face :weight regular
+                                  :slant italic)
 		  (font-lock-constant-face :slant italic)
-		  (font-lock-function-name-face :weight bold :slant italic)
-		  (font-lock-function-call-face :weight bold :slant italic)
-		  (font-lock-variable-name-face :weight bold)
+		  (font-lock-function-name-face :weight regular :slant italic)
+		  (font-lock-function-call-face :weight regular :slant italic)
+		  (font-lock-variable-name-face :weight regular)
 		  (font-lock-doc-face  :slant italic)
 		  (font-lock-comment-face  :slant italic)
 		  (font-lock-type-face :weight regular)
 		  (font-lock-builtin-face :weight regular)
           (header-line :inherit nil)
-          (mode-line :box nil :underline nil)
-          (mode-line-active :box nil :underline nil)
-          (mode-line-inactive :box nil :underline nil)
-          (org-document-title :family "Latin Modern Sans"
+          (org-document-title :family "Roboto Slab"
                               :weight bold :height 2.2)
-          (org-document-info :family "Iosevka Nerd Font Mono" :slant italic)
-          (org-document-info-keyword :family "Iosevka Nerd Font Sans Mono")
-          (org-meta-line :family "Iosevka Nerd Font Mono")
-          (org-verbatim :family "Roboto Mono" :weight regular :height 1.0)
-          (org-block :family "Iosevka Nerd Font Mono" :weight regular)
+          (org-document-info :slant italic)
+          (org-document-info-keyword :family "Roboto Mono")
+          (org-meta-line :family "Roboto Mono")
+          (org-verbatim :family "Roboto Mono" :weight regular
+                        :height 1.0)
+          (org-block :family "Roboto Mono" :weight regular)
           (org-block-begin-line :family "Roboto Mono")
           (org-block-end-line :family "Roboto Mono")
-          (org-level-1 :family "Latin Modern Sans" :weight bold :height 1.8)
-          (org-level-2 :family "Latin Modern Sans" :weight bold :height 1.6)
-          (org-level-3 :family "Latin Modern Sans" :weight bold :height 1.55)
-          (org-level-4 :family "Latin Modern Sans" :weight bold :height 1.4)
-          (org-level-5 :family "Latin Modern Sans" :weight bold :height 1.1)
-          (org-level-6 :family "Latin Modern Sans" :weight bold :height 1.0)
-          (org-level-7 :family "Latin Modern Sans" :weight bold :height 1.0)
-          (org-level-8 :family "Latin Modern Sans" :weight bold :height 1.0)
-          (variable-pitch :family "Latin Modern Sans"
+          (org-level-1 :family "Roboto Slab" :weight bold :height 1.8)
+          (org-level-2 :family "Roboto Slab" :weight bold :height 1.6)
+          (org-level-3 :family "Roboto Slab" :weight bold :height 1.5)
+          (org-level-4 :family "Roboto Slab" :weight bold :height 1.4)
+          (org-level-5 :family "Roboto Slab" :weight bold :height 1.1)
+          (org-level-6 :family "Roboto Slab" :weight bold :height 1.0)
+          (org-level-7 :family "Roboto Slab" :weight bold :height 1.0)
+          (org-level-8 :family "Roboto Slab" :weight bold :height 1.0)
+          (variable-pitch :family "Roboto"
                           :height 1.0 :weight light)
-          (italic :family "Latin Modern Sans" :height 1.0)
-          (fixed-pitch :family "Iosevka Nerd Font Mono")
+          (italic :family "Roboto" :height 1.0)
+          (fixed-pitch :family "Roboto Mono")
           ,@(mapcar
              (lambda (face)
                (let ((name (intern (format "rainbow-delimiters-%s-face"
@@ -251,18 +283,34 @@
                        depth-8 depth-9 unmatched mismatched))
           ))
   
-  ;; (add-hook 'owr-faces-functions-hook 'lean/thin-mode-line)
+  (add-hook 'owr-faces-functions-hook 'lean/thin-mode-line)
   (add-hook 'owr-faces-functions-hook 'lean-background-transparency)
   (owr-faces-mode t))
 
 ;;; Programming
 
 ;; Languages
+(use-package slime
+  :ensure t
+  :init
+  (setq inferior-lisp-program "/usr/local/bin/sbcl")
+  :config
+  (slime-setup '(slime-fancy)))
+
 (use-package kdl-mode
   :vc (:url "https://github.com/taquangtrung/emacs-kdl-mode" :rev :newest))
 
 (use-package markdown-mode
   :vc (:url "https://github.com/jrblevin/markdown-mode" :rev :newest))
+
+(use-package yaml-mode
+  :vc (:url "https://github.com/yoshiki/yaml-mode"))
+
+;; (use-package lisp-ts-mode
+;;   :vc (:url "https://codeberg.org/zshaftel/lisp-ts-mode")
+;;   :init
+;;   (setf (alist-get 'lisp-ts-mode font-lock-ignore)
+;;         lisp-ts-mode-font-lock-ignore-keywords))
 
 ;; Syntax Highlighting with Tree Sitter
 (defvar treesit-modes-list
@@ -274,7 +322,10 @@
     ("\\.rs\\'"  . rust-ts-mode)
     ("\\.cpp\\'" . c++-ts-mode)
     ("\\.c\\'"   . c-ts-mode)
-    ("\\.lua\\'" . lua-ts-mode))
+    ("\\.lua\\'" . lua-ts-mode)
+    ;; ("\\.lisp\\'" . cl-ts-mode)
+    ;; ("\\.cl\\'"   . cl-ts-mode)
+    )
   "List of extensions and Tree Sitter Modes for add to `auto-mode-alist'.")
 
 (dolist (mode treesit-modes-list)
@@ -289,6 +340,11 @@
 ;; Project
 (require 'project)
 
+;; Tramp
+(with-eval-after-load 'tramp
+  (add-to-list 'tramp-remote-path "/home/lean/.npm-global/bin")
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+
 ;; Eglot, Client for Language Servers Programming
 (use-package eglot
   :ensure nil
@@ -300,7 +356,8 @@
     tsx-ts-mode
     lua-ts-mode
     c-ts-mode
-    qml-ts-mode) . eglot-ensure)
+    qml-ts-mode)
+   . eglot-ensure)
   :config
   (add-to-list
    'eglot-server-programs
@@ -308,7 +365,11 @@
      ("rustup" "run" "stable" "rust-analyzer"
       :initializationOptions (:check
                               (:command "clippy")))))
-  (add-to-list 'project-vc-extra-root-markers "tsconfig.json"))
+  (add-to-list 'project-vc-extra-root-markers "tsconfig.json")
+  (add-to-list
+   'eglot-server-programs
+   '((js-ts-mode jsx-ts-mode typescript-ts-mode tsx-ts-mode) .
+     ("typescript-language-server" "--stdio"))))
 
 ;; Check erros on the fly
 (use-package flymake
@@ -389,6 +450,20 @@
   :ensure nil
   :config
   (which-key-mode t))
+
+(use-package multiple-cursors
+  :vc (:url "https://github.com/magnars/multiple-cursors.el")
+  
+  :config
+  (bind-key "C->"     'mc/mark-next-like-this)
+  (bind-key "C-<"     'mc/mark-previous-like-this)
+  (bind-key "C-c C-<" 'mc/mark-all-like-this)
+
+  (set-face-attribute 'mc/cursor-bar-face nil
+                      :height 1.0))
+
+(use-package rainbow-mode
+  :vc (:url "https://github.com/emacsmirror/rainbow-mode"))
 
 ;; Functions
 (defun move-line (n)
@@ -473,7 +548,7 @@
 (use-package own-notes
   :load-path (lambda () (expand-file-name "~/Repos/own-notes"))
   :config
-  (setq own-notes-directory "~/Dropbox/Org/Notas")
+  (setq own-notes-directory "~/Org/Notas")
   (bind-key "M-n n" 'own-notes)
   (bind-key "M-n s" 'own-notes-subdirectory)
   (bind-key "M-n l" 'own-notes-add-link))
