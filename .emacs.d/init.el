@@ -1,7 +1,26 @@
 ;;; init.el --- My personal config for GNU/Emacs  -*- lexical-binding: t -*-
 ;;; Commentary:
 
-;;; Code: 
+;;; Code:
+
+;;; Packages
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir)
+            user-emacs-directory)))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+(straight-use-package 'use-package)
 
 ;;; Startup
 
@@ -78,7 +97,7 @@
 
 ;; Dictionary
 (use-package ispell
-  :ensure nil
+  :straight nil
   :config
   (setq ispell-program-name "aspell")
 
@@ -94,13 +113,13 @@
 
 ;; History
 (use-package savehist
-  :ensure nil
+  :straight nil
   :config
   (savehist-mode t))
 
 ;; Recent files
 (use-package recentf
-  :ensure nil
+  :straight nil
   :config
   (setq recentf-max-menu-items 10
 	recentf-max-saved-items 100)
@@ -110,7 +129,7 @@
 ;;; Interface
 (when (display-graphic-p)
   (use-package frame
-    :ensure nil
+    :straight nil
     :config
     (setq default-frame-alist '((min-height . 1)
 				                (min-width  . 1)
@@ -150,7 +169,7 @@
 
 ;; Cusros
 (setq-default cursor-type '(bar . 2))
-(blink-cursor-mode t)
+(blink-cursor-mode nil)
 
 ;; Line Spacing
 (setq-default line-spacing 0.0)
@@ -158,7 +177,7 @@
 (unless (display-graphic-p)
   ;; Line Numbers
   (use-package display-line-numbers
-    :ensure nil
+    :straight nil
     :config
     (setq display-line-numbers-width 3)
     :hook
@@ -200,28 +219,30 @@
   (use-package lean-modeline
     :load-path (lambda () (expand-file-name "~/Repos/lean-modeline/"))
     :config
+    (setq lean-modeline-text-scale-factor 1.0)
+    (setq lean-modeline-icon-scale-factor 1.0)
     (lean-modeline-mode)
     (lean/thin-mode-line)))
 
 ;; Theme
-(require-theme 'modus-themes)
+(use-package modus-themes
+  :straight t
+  :config
+  (when (display-graphic-p)
+    (use-package lean-themes
+      :load-path (lambda () (expand-file-name "~/Repos/lean-themes/"))
+      :config
+      (setq lean-themes-to-toggle '(tokyonight-night rose-pine-dawn))
+      (load-theme 'tokyonight-night :no-confirm)
+      (bind-key "C-x t t" #'lean-themes-toggle)))
+
+  (unless (display-graphic-p)
+    (setq modus-themes-to-toggle '(modus-vivendi modus-vivendi-tritanopia))
+    (load-theme 'modus-vivendi :no-confirm)
+    (bind-key "C-x t t" #'modus-themes-toggle)))
 
 (defun transparent-background-p ()
   (< (alist-get 'alpha-background default-frame-alist) 1.0))
-
-(let ((current nil) (alternative nil))
-  (if (and (display-graphic-p)
-           (not (transparent-background-p)))
-      (setq current 'modus-operandi
-            alternative 'modus-vivendi)
-    (setq current 'modus-vivendi
-          alternative 'modus-vivendi-tritanopia))
-  (setq modus-vivendi-palette-overrides modus-themes-preset-overrides-faint
-        modus-operandi-palette-overrides modus-themes-preset-overrides-cooler
-        modus-themes-to-toggle `(,current ,alternative))
-  (load-theme current :no-confirm))
-
-(bind-key "C-x t t" #'modus-themes-toggle)
 
 (defun lean-background-transparency (&optional confirm)
   "Enable transparency when is terminal mode or CONFIRM is t."
@@ -230,14 +251,14 @@
     (mapc #'(lambda (face) (set-face-background face "unspecified-bg"))       
           '(default line-number fringe internal-border))))
 
-(set-frame-font "IntoneMono NF")
+(set-frame-font "JetBrainsMono Nerd Font")
 
 ;; Rewrite faces on the fly
 (use-package owr-faces
   :load-path (lambda () (expand-file-name "~/Repos/owr-faces/"))
   :config
   (setq owr-faces-face-attrs-preferences
-        `((default :weight regular :height 150)
+        `((default :weight light :height 140)
 		  (bold :weight bold)
 		  (line-number :slant italic)
 		  (line-number-current-line :slant italic)
@@ -289,28 +310,57 @@
 
 ;;; Programming
 
+;; Autocompletion
+(use-package corfu
+  :straight t
+  :config
+  (global-corfu-mode t)
+  (setq corfu-auto t
+	    corfu-auto-prefix 2
+	    corfu-auto-delay 0.2
+	    corfu-separator ?\s
+	    corfu-quit-at-boundary nil
+	    corfu-quit-no-match t
+	    corfu-preview-current nil
+	    corfu-on-exact-match nil
+	    corfu-scroll-margin 5
+	    corfu-popupinfo-delay 0.3))
+
+(use-package cape
+  :straight t
+  :init
+  (setq cape-dict-file "/usr/share/dict/spanish")
+  (add-hook 'completion-at-point #'cape-dabbrev)
+  (add-hook 'completion-at-point #'cape-file)  
+  (add-hook 'completion-at-point #'cape-elisp-block)
+  (add-hook 'completion-at-point #'cape-dabbrev)
+  (add-hook 'text-mode-hook #'(lambda () (add-to-list 'completion-at-point #'cape-dict))))
+
+(use-package orderless
+  :straight t
+  :config 
+  (setq completion-styles '(substring orderless basic)
+	orderless-component-separator 'orderless-escapable-split-on-space
+	read-file-name-completion-ignore-case t
+	read-buffer-completion-ignore-case t
+	completion-ignore-case t))
+
 ;; Languages
 (use-package slime
-  :ensure t
+  :straight t
   :init
   (setq inferior-lisp-program "/usr/local/bin/sbcl")
   :config
   (slime-setup '(slime-fancy)))
 
 (use-package kdl-mode
-  :vc (:url "https://github.com/taquangtrung/emacs-kdl-mode" :rev :newest))
+  :straight t)
 
 (use-package markdown-mode
-  :vc (:url "https://github.com/jrblevin/markdown-mode" :rev :newest))
+  :straight t)
 
 (use-package yaml-mode
-  :vc (:url "https://github.com/yoshiki/yaml-mode"))
-
-;; (use-package lisp-ts-mode
-;;   :vc (:url "https://codeberg.org/zshaftel/lisp-ts-mode")
-;;   :init
-;;   (setf (alist-get 'lisp-ts-mode font-lock-ignore)
-;;         lisp-ts-mode-font-lock-ignore-keywords))
+  :straight t)
 
 ;; Syntax Highlighting with Tree Sitter
 (defvar treesit-modes-list
@@ -340,14 +390,9 @@
 ;; Project
 (require 'project)
 
-;; Tramp
-(with-eval-after-load 'tramp
-  (add-to-list 'tramp-remote-path "/home/lean/.npm-global/bin")
-  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
-
 ;; Eglot, Client for Language Servers Programming
 (use-package eglot
-  :ensure nil
+  :straight nil
   :hook
   ((rust-ts-mode
     python-ts-mode
@@ -355,8 +400,7 @@
     typescript-ts-mode
     tsx-ts-mode
     lua-ts-mode
-    c-ts-mode
-    qml-ts-mode)
+    c-ts-mode)
    . eglot-ensure)
   :config
   (add-to-list
@@ -373,86 +417,79 @@
 
 ;; Check erros on the fly
 (use-package flymake
-  :ensure nil
+  :straight nil
   :config
   (setq flymake-indicator-type 'margins
         flymake-margin-indicator-position 'right-margin))
 
 ;;; Utilities
 
-;; Mini Buffer Completions
-(use-package minibuffer
-  :ensure nil
+;;;; Tramp
+(with-eval-after-load 'tramp
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+
+(require 'tramp)
+
+;;;; Minibuffer
+(use-package vertico
+  :straight t
   :config
-  ;; Do not inform me about the default keybindings to select a
-  ;; candidate.
-  (setq completion-show-help nil)
+  (setq vertico-resize nil
+	vertico-count 10
+	vertico-count-format nil)
+  (vertico-mode))
 
-  ;; Do not print messages in the echo area that pertain to
-  ;; completion---those are distracting.
-  (setq completion-show-inline-help nil)
-
-  ;; Show useful annotations in various minibuffer prompts (though the
-  ;; `marginalia' package greatly improves this).
-  (setq completions-detailed t)
-
-  ;; Do not use rows and columns for completions: a single vertical
-  ;; list is easier to follow.
-  (setq completions-format 'one-column)
-
-  ;; Put an upper limit to the Completions window, so that it does not
-  ;; disorient me.
-  (setq completions-max-height 12)
-
-  ;; Rely on previous inputs to surface candidates towards the top of
-  ;; the list (enable the built-in `savehist-mode' to persist
-  ;; history).
-  (setq completions-sort 'historical)
-
-  ;; Show the Completions buffer if I hit TAB but there is no unique match yet.
-  (setq completion-auto-help t)
-
-  ;; Never switch to the Completions buffer when I type TAB, because I
-  ;; want to select candidates while the minibuffer is still in focus,
-  ;; per `minibuffer-visible-completions'.  This has the advantage of
-  ;; auto-updating the completions as I type.
-  (setq completion-auto-select nil
-        minibuffer-visible-completions t)
-
-  ;; Those two are also relevant for the `completion-category-overrides', which I
-  ;; cover elsewhere in this article.
-  (setq completion-eager-display t)
-  (setq completion-eager-update t)
-
-  ;; Pattern-matching styles to interpret our input in every context.
-  (setq completion-styles '(basic substring initials flex))
-
-  ;; An exception to the above for the `file' category, where we
-  ;; specifically want to use the `partial-completion' style:
-  (setq completion-category-overrides
-        '((file . ((styles partial-completion)))))
-
-  (setq tab-always-indent 'complete)
+(use-package consult
+  :straight t
+  :config
+  (setq consult-preview-key nil)
   
-  (define-key minibuffer-local-completion-map (kbd "SPC") 'self-insert-command))
+  (defun my/consult-line ()
+    "Consult line with live preview"
+    (interactive)
+    (let ((consult-preview-key 'any)
+          (mini-frame-resize 'grow-only)) ;; !! Important
+      (consult-line)))
+
+  (defun my/consult-goto-line ()
+    "Consult goto line with live preview"
+    (interactive)
+    (let ((consult-preview-key 'any))
+      (consult-goto-line)))
+
+  (bind-key "C-x C-r" #'consult-recent-file)
+  (bind-key "C-x h"   #'consult-outline)
+  (bind-key "C-x b"   #'consult-buffer)
+  (bind-key "C-c h"   #'consult-history)
+  (bind-key "C-s"     #'my/consult-line)
+  (bind-key "M-g g"   #'my/consult-goto-line)
+  (bind-key "M-g M-g" #'my/consult-goto-line))
+
+(use-package marginalia
+  :straight t
+  :config
+  (setq-default marginalia--ellipsis "…"    ; Nicer ellipsis
+		marginalia-align 'right     ; right alignment
+		marginalia-align-offset -1) ; one space on the right
+  (marginalia-mode))
 
 ;; Ibuffer
 (bind-key "C-x C-b" #'ibuffer)
 
 ;; Documentation
 (use-package eldoc
-  :ensure nil
+  :straight nil
   :config
   (global-eldoc-mode t))
 
 ;; Search keybindings
 (use-package which-key
-  :ensure nil
+  :straight nil
   :config
   (which-key-mode t))
 
 (use-package multiple-cursors
-  :vc (:url "https://github.com/magnars/multiple-cursors.el")
+  :straight t
   
   :config
   (bind-key "C->"     'mc/mark-next-like-this)
@@ -463,7 +500,12 @@
                       :height 1.0))
 
 (use-package rainbow-mode
-  :vc (:url "https://github.com/emacsmirror/rainbow-mode"))
+  :straight t)
+
+(use-package rainbow-delimiters
+  :straight t
+  :hook
+  (prog-mode . rainbow-delimiters-mode))
 
 ;; Functions
 (defun move-line (n)
@@ -518,7 +560,7 @@
 
 ;;; Org Mode
 (use-package org
-  :ensure nil
+  :straight nil
   :custom
   (org-image-actual-width 500)
   :config

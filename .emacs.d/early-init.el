@@ -28,5 +28,7 @@
 ;; Forzar parámetros seguros para Wayland/PGTK
 (setq pgtk-use-im-context nil) ; Deshabilita bugs con métodos de entrada si fallan en Niri
 
+(setq package-enable-at-startup nil)
+
 (provide 'early-init)
 ;;; early-init.el ends here

@@ -12,7 +12,6 @@ zinit light Aloxaf/fzf-tab
 
 ## Add in snippets
 zinit snippet OMZP::git
-zinit snippet OMZP::archlinux
 
 # Keybindings
 bindkey -e
@@ -27,7 +26,7 @@ zinit cdreplay -q
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-zu}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLOR}"
 zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Evita que Zsh expanda los aliases antes de que fzf-tab pueda procesarlos
@@ -72,7 +71,7 @@ alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME '
 autoload -U colors && colors
 
 # Prompt
-PROMPT=$'%F{red}%B[%F{yellow}%{\e[3m%}%n%F{green}@%F{blue}%m%{\e[0m%}%F{red}]%F{cyan}:%F{magenta}%~ %F{white}$ %b%f'
+PROMPT=$'%F{red}[%F{yellow}%{\e[3m%}%n%F{green}@%F{blue}%m%{\e[0m%}%F{red}]%F{cyan}:%F{magenta}%~ %F{white}$ %f'
 
 # Prompt
 # eval "$(starship init zsh)"
